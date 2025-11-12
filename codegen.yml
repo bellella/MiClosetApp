@@ -1,0 +1,38 @@
+# codegen.yml
+# ===============================================
+# React Native + Shopify Storefront API
+# graphql-request + React Query + Codegen 통합 버전
+# ===============================================
+
+schema:
+  - https://shopify.dev/storefront-graphql-direct-proxy:
+      headers:
+        X-Shopify-Storefront-Access-Token: ${SHOPIFY_STOREFRONT_API_TOKEN}
+        Content-Type: application/json
+      method: POST   # 💥 Shopify introspection은 POST로 해야 함!
+
+documents:
+  - './lib/graphql/**/*.graphql'
+
+generates:
+  ./src/graphql/generated/:
+    presetConfig:
+      extension: .generated.ts
+      baseTypesPath: ./globalTypes.ts
+    plugins:
+      - typescript
+      - typescript-operations
+      - typed-document-node
+
+config:
+  scalars:
+    MoneyV2: '{ amount: string; currencyCode: string }'
+    HTML: string
+    URL: string
+    DateTime: string
+  addTypename: true
+  skipTypename: false
+  useTypeImports: true
+  namingConvention:
+    typeNames: pascal-case#pascalCase
+    enumValues: keep

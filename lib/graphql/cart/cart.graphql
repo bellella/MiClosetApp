@@ -1,0 +1,136 @@
+# 공통 프래그먼트: 카트 라인의 Variant 정보
+fragment CartLineVariant on ProductVariant {
+  id
+  title
+  availableForSale
+  price {
+    amount
+    currencyCode
+  }
+  product {
+    title
+    vendor
+    featuredImage { url }
+  }
+}
+
+# ✅ 카트 생성 (처음 담기 전용)
+mutation CreateCart($lines: [CartLineInput!], $buyerIdentity: CartBuyerIdentityInput) {
+  cartCreate(input: { lines: $lines, buyerIdentity: $buyerIdentity }) {
+    cart {
+      id
+      checkoutUrl
+      createdAt
+      lines(first: 100) {
+        edges {
+          node {
+            id
+            quantity
+            merchandise {
+              ... on ProductVariant { ...CartLineVariant }
+            }
+          }
+        }
+      }
+      estimatedCost {
+        subtotalAmount { amount currencyCode }
+        totalTaxAmount { amount currencyCode }
+        totalAmount   { amount currencyCode }
+      }
+    }
+    userErrors {
+      field
+      message
+    }
+  }
+}
+
+# 장바구니 조회
+query GetCartById($id: ID!) {
+  cart(id: $id) {
+    id
+    buyerIdentity {
+      email
+      phone
+      countryCode
+      customer {
+        id
+      }
+    }
+    checkoutUrl
+    lines(first: 100) {
+      edges {
+        node {
+          id
+          quantity
+          merchandise {
+            ... on ProductVariant { ...CartLineVariant }
+          }
+        }
+      }
+    }
+    estimatedCost {
+      subtotalAmount { amount currencyCode }
+      totalTaxAmount { amount currencyCode }
+      totalAmount    { amount currencyCode }
+    }
+  }
+}
+
+# 수량/옵션 업데이트
+mutation UpdateCartLine($cartId: ID!, $lines: [CartLineUpdateInput!]!) {
+  cartLinesUpdate(cartId: $cartId, lines: $lines) {
+    cart {
+      id
+      lines(first: 100) {
+        edges { node { id quantity } }
+      }
+    }
+    userErrors { field message }
+  }
+}
+
+# 라인 삭제
+mutation RemoveCartLine($cartId: ID!, $lineIds: [ID!]!) {
+  cartLinesRemove(cartId: $cartId, lineIds: $lineIds) {
+    cart { id }
+    userErrors { field message }
+  }
+}
+
+# 장바구니에 상품 추가
+mutation AddToCart($cartId: ID!, $lines: [CartLineInput!]!) {
+  cartLinesAdd(cartId: $cartId, lines: $lines) {
+    cart {
+      id
+      lines(first: 50) {
+        edges {
+          node {
+            id
+            quantity
+            merchandise {
+              ... on ProductVariant {
+                id
+                title
+                product {
+                  title
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+# 바로 구매 (cart 생성 + checkoutUrl)
+mutation BuyNow($lines: [CartLineInput!]!) {
+  cartCreate(input: { lines: $lines }) {
+    cart {
+      id
+      checkoutUrl
+    }
+  }
+}
+

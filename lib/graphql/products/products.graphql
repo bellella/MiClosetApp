@@ -1,0 +1,110 @@
+query GetProducts {
+  products(first: 10) {
+    nodes {
+      id
+      title
+      handle
+      featuredImage {
+        url
+        altText
+      }
+      priceRange {
+        minVariantPrice {
+          amount
+          currencyCode
+        }
+      }
+    }
+  }
+}
+
+query GetProductById($id: ID!) {
+  product(id: $id) {
+    id
+    title
+    handle
+    descriptionHtml
+    vendor
+    images(first: 10) {
+      nodes {
+        url
+        altText
+      }
+    }
+    options {
+      name
+      values
+    }
+    variants(first: 100) {
+      nodes {
+        ...ProductVariant
+      }
+    }
+    priceRange {
+      minVariantPrice {
+        amount
+        currencyCode
+      }
+    }
+  }
+}
+
+fragment ProductVariant on ProductVariant {
+  id
+  title
+  availableForSale
+  selectedOptions {
+    name
+    value
+  }
+  price {
+    amount
+    currencyCode
+  }
+}
+
+query GetCollectionProducts($handle: String!, $first: Int!) {
+  collection(handle: $handle) {
+    id
+    title
+    description
+    products(first: $first) {
+      nodes {
+        id
+        title
+        handle
+        featuredImage {
+          url
+          altText
+        }
+        priceRange {
+          minVariantPrice {
+            amount
+            currencyCode
+          }
+        }
+      }
+    }
+  }
+}
+
+# fragment ProductCard on Product {
+#   id
+#   title
+#   handle
+#   featuredImage {
+#     url
+#     altText
+#   }
+#   priceRange {
+#     minVariantPrice {
+#       amount
+#       currencyCode
+#     }
+#   }
+# }
+
+fragment ProductOptionsSelectorItem on ProductOption {
+  name
+  values
+}

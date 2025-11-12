@@ -1,0 +1,42 @@
+mutation CustomerCreate($input: CustomerCreateInput!) {
+  customerCreate(input: $input) {
+    customer {
+      id
+      email
+      firstName
+      lastName
+    }
+    customerUserErrors {
+      code
+      field
+      message
+    }
+  }
+}
+
+mutation CustomerAccessTokenCreate($input: CustomerAccessTokenCreateInput!) {
+  customerAccessTokenCreate(input: $input) {
+    customerAccessToken {
+      accessToken
+      expiresAt
+    }
+    customerUserErrors {
+      code
+      field
+      message
+    }
+  }
+}
+
+mutation CustomerAccessTokenRenew($customerAccessToken: String!) {
+  customerAccessTokenRenew(customerAccessToken: $customerAccessToken) {
+    customerAccessToken {
+      accessToken
+      expiresAt
+    }
+    userErrors {
+      field
+      message
+    }
+  }
+}
