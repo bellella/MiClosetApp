@@ -1,4 +1,5 @@
 import { GetCollectionProductsQuery, ProductVariantFragment } from "@/lib/graphql/products/products.graphql";
+import { ProductOption } from "@/lib/graphql/shopify.schema";
 
 export type ProductCard = {
   id: string;
@@ -28,6 +29,8 @@ export type ProductDetail = {
     compareAtPrice: number | null;
   }[];
 };
+
+export type ProductOptionItem = Pick<ProductOption, "name" | "values">;
 
 export type ProductVariant = {
   id: string;

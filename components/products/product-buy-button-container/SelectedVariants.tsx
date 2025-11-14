@@ -6,11 +6,13 @@ import { Pressable } from "@/components/ui/pressable";
 import { Feather } from "@expo/vector-icons";
 import { ProductVariantItem } from "@/lib/graphql/types/product.type";
 import { QuantitySelector } from "@/components/common/QuantitySelector";
+import { HStack } from "@/components/ui/hstack/index.web";
+import { cn } from "@/lib/utils/classnames";
 
 type Props = {
   variants: ProductVariantItem[];
-  onQuantityChange?: (id: string, newQty: number) => void;
-  onRemove?: (id: string) => void;
+  onQuantityChange: (id: string, newQty: number) => void;
+  onRemove: (id: string) => void;
 };
 
 export function SelectedVariants({
@@ -22,54 +24,45 @@ export function SelectedVariants({
 
   return (
     <View className="mt-6 space-y-3">
-      <Text className="font-medium mb-2">선택된 상품</Text>
+      <Text className="mb-2 font-medium">선택된 상품</Text>
 
       {variants.map((variant) => (
         <Box
           key={variant.id}
-          className={`relative border rounded-lg p-3 bg-white ${
-            variant.availableForSale
-              ? "border-gray-300"
-              : "border-gray-200 opacity-50"
-          }`}
+          className={cn(
+            "relative space-y-1 rounded-lg border bg-white p-3",
+            variant.availableForSale ? "" : "opacity-50"
+          )}
         >
-          {/* X 버튼 */}
-          {onRemove && (
-            <Pressable
-              onPress={() => onRemove(variant.id)}
-              className="absolute top-2 right-2 p-1"
-            >
+          <HStack className="justify-between">
+            <Text className="flex-shrink font-medium">
+              {variant.title.replace("/", " / ")}
+            </Text>{" "}
+            <Pressable onPress={() => onRemove(variant.id)} className="">
               <Feather name="x" size={18} color="#999" />
             </Pressable>
-          )}
+          </HStack>
 
-          {/* 상품명 + 가격 */}
-          <View className="flex-row justify-between items-center mb-2">
-            <Text className="font-medium flex-shrink">
-              {variant.title.replace("/", " / ")}
-            </Text>
-            <Text className="text-right">
-              {parseFloat(variant.price.amount).toLocaleString()}{" "}
-              {variant.price.currencyCode}
-            </Text>
-          </View>
+          <HStack className="items-center justify-between">
+            {/* 수량 조절 */}
+            {variant.availableForSale ? (
+              <QuantitySelector
+                quantity={variant.quantity || 1}
+                onChange={(newQty) => onQuantityChange(variant.id, newQty)}
+              />
+            ) : (
+              <Text className="text-sm">
+                {variant.availableForSale || "sold out"}
+              </Text>
+            )}
 
-          {/* 재고 상태 */}
-          <Text
-            className={`text-sm mb-2 ${
-              variant.availableForSale ? "text-green-600" : "text-gray-400"
-            }`}
-          >
-            {variant.availableForSale ? "재고 있음" : "품절"}
-          </Text>
-
-          {/* 수량 조절 */}
-          {variant.availableForSale && onQuantityChange && (
-            <QuantitySelector
-              quantity={variant.quantity || 1}
-              onChange={(newQty) => onQuantityChange(variant.id, newQty)}
-            />
-          )}
+            <View className="mb-2 flex-row items-center justify-between">
+              <Text className="text-right">
+                {parseFloat(variant.price.amount).toLocaleString()}{" "}
+                {variant.price.currencyCode}
+              </Text>
+            </View>
+          </HStack>
         </Box>
       ))}
     </View>

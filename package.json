@@ -9,7 +9,10 @@
     "ios": "DARK_MODE=media expo start --ios",
     "web": "DARK_MODE=media expo start --web",
     "codegen": "graphql-codegen --config lib/graphql/codegen.ts",
-    "test": "jest --watchAll"
+    "test": "jest --watchAll",
+    "storybook-generate": "sb-rn-get-stories",
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
+    "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,css,md}\""
   },
   "jest": {
     "preset": "jest-expo"
@@ -69,13 +72,22 @@
     "@graphql-codegen/cli": "^6.0.1",
     "@graphql-codegen/schema-ast": "^5.0.0",
     "@parcel/watcher": "^2.5.1",
+    "@react-native-community/datetimepicker": "^8.5.0",
+    "@react-native-community/slider": "^5.1.1",
+    "@storybook/addon-ondevice-actions": "^10.0.7",
+    "@storybook/addon-ondevice-controls": "^10.0.7",
+    "@storybook/react-native": "^10.0.7",
     "@types/react": "~19.1.10",
+    "babel-loader": "^8.4.1",
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "jest": "^29.2.1",
     "jest-expo": "~54.0.11",
     "jscodeshift": "0.15.2",
+    "prettier": "^3.6.2",
+    "prettier-plugin-tailwindcss": "^0.7.1",
     "react-test-renderer": "19.1.0",
+    "storybook": "^10.0.7",
     "typescript": "~5.9.2"
   },
   "private": true

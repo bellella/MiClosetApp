@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+.yarn/
+
+# Build outputs
+.expo/
+.expo-shared/
+dist/
+build/
+web-build/
+
+# Generated files
+*.graphql.ts
+schema.graphql
+.rnstorybook/storybook.requires.ts
+
+# Config files
+yarn.lock
+package-lock.json
+pnpm-lock.yaml
+
+# Misc
+.DS_Store
+*.log
+.vscode/
+.idea/
+
+# Coverage
+coverage/

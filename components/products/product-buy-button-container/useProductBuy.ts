@@ -6,6 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 import { shopifySdk } from "@/lib/graphql/client";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuthStore } from "@/lib/stores/auth.store";
+import { ProductOptionItem } from "@/types/product.type";
 
 /**
  * ProductBuyButtonWrapper 전용 훅
@@ -13,36 +14,37 @@ import { useAuthStore } from "@/lib/stores/auth.store";
  * - 선택된 variants 관리
  * - 장바구니 추가 / 바로구매 처리
  */
+
+type SelectedOptions = Record<string, string>;
+
 export function useProductBuy(
-  options: Pick<ProductOption, "name" | "values">[],
+  options: ProductOptionItem[],
   variants: ProductVariantFragment[]
 ) {
   const {user} = useAuthStore();
-  const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
   const [selectedVariants, setSelectedVariants] = useState<ProductVariantItem[]>([]);
 
-  /** 옵션 선택 */
-  const handleOptionSelect = (name: string, value: string) => {
-    setSelectedOptions((prev) => ({ ...prev, [name]: value }));
-  };
-
-  /** 모든 옵션 선택 완료 시 variant 매칭 */
-  useEffect(() => {
-    const allSelected = options.every((opt) => selectedOptions[opt.name]);
-    if (!allSelected) return;
-
-    const matched = variants.find((v) =>
+  const handleOptionSelect = (selectedOptions: SelectedOptions) => {
+      const matched = variants.find((v) =>
       v.selectedOptions.every((opt) => selectedOptions[opt.name] === opt.value)
     );
 
     if (matched) {
-      const exists = selectedVariants.some((item) => item.id === matched.id);
-      if (!exists) {
+      const sameVariant = selectedVariants.find((item) => item.id === matched.id);
+      if (sameVariant) {
+        // if already selected, increase quantity
+        setSelectedVariants((prev) =>
+          prev.map((item) =>
+            item.id === matched.id
+              ? { ...item, quantity: (item.quantity || 1) + 1 }
+              : item
+          )
+        );
+      } else {
         setSelectedVariants((prev) => [...prev, { ...matched, quantity: 1 }]);
       }
-      setSelectedOptions({}); // 선택 초기화
     }
-  }, [selectedOptions]);
+  };
 
   /** 수량 변경 */
   const updateQuantity = (id: string, newQty: number) => {
@@ -108,7 +110,6 @@ export function useProductBuy(
   });
 
   return {
-    selectedOptions,
     selectedVariants,
     totalPrice,
     handleOptionSelect,

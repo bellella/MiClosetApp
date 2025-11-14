@@ -24,7 +24,6 @@ type Props = {
 export function ProductBuyButtonContainer({ options, variants }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const {
-    selectedOptions,
     selectedVariants,
     totalPrice,
     handleOptionSelect,
