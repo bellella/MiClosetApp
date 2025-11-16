@@ -4,30 +4,26 @@ import { Text } from "@/components/ui/text";
 import { ProductDetailReview } from "@/components/reviews/ProductDetailReview";
 import { AppContainer } from "@/components/app/app-container";
 import { ProductImageCarousel } from "@/components/products/ProductImageCarousel";
-import { ActivityIndicator, useWindowDimensions } from "react-native";
+import { useWindowDimensions } from "react-native";
 import RenderHtml from "react-native-render-html";
 import { shopifySdk } from "@/lib/graphql/client";
 import { useQuery } from "@tanstack/react-query";
 import { ProductBuyButtonContainer } from "@/components/products/product-buy-button-container";
+import { PageLoading } from "@/components/common/PageLoading";
 
 export default function ProductDetailScreen() {
-
   const { id } = useLocalSearchParams();
   const { width } = useWindowDimensions();
   const { data, isLoading, isError } = useQuery({
     queryKey: ["product", id],
-    queryFn: () =>
-      shopifySdk.products
-        .GetProductById({ id: id as string })
+    queryFn: () => shopifySdk.products.GetProductById({ id: id as string }),
   });
   const product = data?.product;
 
   if (isLoading || !product) {
     return (
       <AppContainer showBackButton headerTitle="Product Detail">
-        <View className="py-20 items-center justify-center">
-          <ActivityIndicator size="large" />
-        </View>
+        <PageLoading />
       </AppContainer>
     );
   }
@@ -35,7 +31,7 @@ export default function ProductDetailScreen() {
   if (isError) {
     return (
       <AppContainer showBackButton headerTitle="Product Detail">
-        <View className="py-20 items-center justify-center">
+        <View className="items-center justify-center py-20">
           <Text>Error loading product detail.</Text>
         </View>
       </AppContainer>
@@ -44,9 +40,9 @@ export default function ProductDetailScreen() {
 
   return (
     <>
-      <AppContainer headerTitle="Product Detail" showBackButton>
+      <AppContainer headerTitle="Product Detail" showBackButton showHeaderCart>
         <ProductImageCarousel imageUrls={product.images.nodes} />
-        <View className="w-full max-w-[600px] self-center px-4 py-6 space-y-6">
+        <View className="w-full max-w-[600px] space-y-6 self-center px-4 py-6">
           <View>
             <Text size="sm" className="text-gray-500">
               {product.vendor}
@@ -61,7 +57,9 @@ export default function ProductDetailScreen() {
           </View>
 
           <View>
-            <Text bold size="sm" className="mb-2">Description</Text>
+            <Text bold size="sm" className="mb-2">
+              Description
+            </Text>
             <RenderHtml
               contentWidth={width}
               source={{ html: product.descriptionHtml }}
@@ -74,7 +72,10 @@ export default function ProductDetailScreen() {
         </View>
       </AppContainer>
 
-      <ProductBuyButtonContainer options={product.options} variants={product.variants.nodes}/>
+      <ProductBuyButtonContainer
+        options={product.options}
+        variants={product.variants.nodes}
+      />
     </>
   );
 }

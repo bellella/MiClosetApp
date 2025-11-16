@@ -4,3 +4,5 @@ export type Customer = {
   firstName: string;
   lastName: string;
 };
+
+export type User = Customer

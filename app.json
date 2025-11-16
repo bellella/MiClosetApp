@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "MiClosetApp",
-    "slug": "MiClosetApp",
+    "slug": "miclosetapp",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -32,11 +32,23 @@
     "plugins": [
       "expo-router",
       "expo-secure-store",
-      "expo-web-browser",
+      [
+        "expo-web-browser",
+        {
+          "experimentalLauncherActivity": true
+        }
+      ],
       "expo-font"
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "6672fe58-2716-43be-9945-696339c8778a"
+      }
+    },
+    "owner": "minacoco"
   }
 }

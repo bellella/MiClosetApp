@@ -7,6 +7,8 @@ import { shopifySdk } from "@/lib/graphql/client";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuthStore } from "@/lib/stores/auth.store";
 import { ProductOptionItem } from "@/types/product.type";
+import { useToastMessage } from "@/lib/hooks/useToastMessage";
+import { CART_KEY } from "@/constants/common";
 
 /**
  * ProductBuyButtonWrapper 전용 훅
@@ -22,6 +24,7 @@ export function useProductBuy(
   variants: ProductVariantFragment[]
 ) {
   const {user} = useAuthStore();
+  const {showError, showSuccess} = useToastMessage();
   const [selectedVariants, setSelectedVariants] = useState<ProductVariantItem[]>([]);
 
   const handleOptionSelect = (selectedOptions: SelectedOptions) => {
@@ -67,12 +70,11 @@ export function useProductBuy(
   );
 
   /** cartId 관리 */
-  const CART_KEY = "shopify-cart-id";
   const getCartId = async () => await AsyncStorage.getItem(CART_KEY);
   const setCartId = async (id: string) => await AsyncStorage.setItem(CART_KEY, id);
 
   /** 장바구니 담기 */
-  const addToCart = useMutation({
+  const cartLinesAdd = useMutation({
     mutationFn: async () => {
       const lines = selectedVariants.map((v) => ({
         merchandiseId: v.id,
@@ -82,18 +84,24 @@ export function useProductBuy(
       let cartId = await getCartId();
 
       if (!cartId) {
-        const res = await shopifySdk.cart.CreateCart({ lines, buyerIdentity: {email: user?.email} });
+        const res = await shopifySdk.cart.cartCreate({ lines, buyerIdentity: {email: user?.email} });
         cartId = res.cartCreate?.cart?.id || null;
         if (cartId) await setCartId(cartId);
-        return res.cartCreate?.cart;
       }
 
-      const res = await shopifySdk.cart.AddToCart({
+      if(cartId) {
+        const res = await shopifySdk.cart.cartLinesAdd({
         cartId,
         lines,
-      });
+        });
+        const resCardId = res.cartLinesAdd?.cart?.id;
+        if(resCardId && cartId !== resCardId) {
+          setCartId(resCardId);
+        }
+        return res;
+      }
 
-      return res.cartLinesAdd?.cart;
+      throw new Error();
     },
   });
 
@@ -104,7 +112,7 @@ export function useProductBuy(
         merchandiseId: v.id,
         quantity: v.quantity,
       }));
-      const res = await shopifySdk.cart.BuyNow({ lines });
+      const res = await shopifySdk.cart.cartCreate({ lines });
       return res.cartCreate?.cart?.checkoutUrl;
     },
   });
@@ -115,7 +123,7 @@ export function useProductBuy(
     handleOptionSelect,
     updateQuantity,
     removeVariant,
-    addToCart,
+    cartLinesAdd,
     buyNow,
   };
 }

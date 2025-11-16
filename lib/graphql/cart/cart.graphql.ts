@@ -5,13 +5,13 @@ import gql from 'graphql-tag';
 type GraphQLClientRequestHeaders = RequestOptions['requestHeaders'];
 export type CartLineVariantFragment = { __typename?: 'ProductVariant', id: string, title: string, availableForSale: boolean, price: { __typename?: 'MoneyV2', amount: any, currencyCode: Types.CurrencyCode }, product: { __typename?: 'Product', title: string, vendor: string, featuredImage?: { __typename?: 'Image', url: any } | null } };
 
-export type CreateCartMutationVariables = Types.Exact<{
+export type CartCreateMutationVariables = Types.Exact<{
   lines?: Types.InputMaybe<Array<Types.CartLineInput> | Types.CartLineInput>;
   buyerIdentity?: Types.InputMaybe<Types.CartBuyerIdentityInput>;
 }>;
 
 
-export type CreateCartMutation = { __typename?: 'Mutation', cartCreate?: { __typename?: 'CartCreatePayload', cart?: { __typename?: 'Cart', id: string, checkoutUrl: any, createdAt: any, lines: { __typename?: 'BaseCartLineConnection', edges: Array<{ __typename?: 'BaseCartLineEdge', node:
+export type CartCreateMutation = { __typename?: 'Mutation', cartCreate?: { __typename?: 'CartCreatePayload', cart?: { __typename?: 'Cart', id: string, checkoutUrl: any, createdAt: any, lines: { __typename?: 'BaseCartLineConnection', edges: Array<{ __typename?: 'BaseCartLineEdge', node:
             | { __typename?: 'CartLine', id: string, quantity: number, merchandise: { __typename?: 'ProductVariant', id: string, title: string, availableForSale: boolean, price: { __typename?: 'MoneyV2', amount: any, currencyCode: Types.CurrencyCode }, product: { __typename?: 'Product', title: string, vendor: string, featuredImage?: { __typename?: 'Image', url: any } | null } } }
             | { __typename?: 'ComponentizableCartLine', id: string, quantity: number, merchandise: { __typename?: 'ProductVariant', id: string, title: string, availableForSale: boolean, price: { __typename?: 'MoneyV2', amount: any, currencyCode: Types.CurrencyCode }, product: { __typename?: 'Product', title: string, vendor: string, featuredImage?: { __typename?: 'Image', url: any } | null } } }
            }> }, estimatedCost: { __typename?: 'CartEstimatedCost', subtotalAmount: { __typename?: 'MoneyV2', amount: any, currencyCode: Types.CurrencyCode }, totalTaxAmount?: { __typename?: 'MoneyV2', amount: any, currencyCode: Types.CurrencyCode } | null, totalAmount: { __typename?: 'MoneyV2', amount: any, currencyCode: Types.CurrencyCode } } } | null, userErrors: Array<{ __typename?: 'CartUserError', field?: Array<string> | null, message: string }> } | null };
@@ -26,42 +26,35 @@ export type GetCartByIdQuery = { __typename?: 'QueryRoot', cart?: { __typename?:
           | { __typename?: 'ComponentizableCartLine', id: string, quantity: number, merchandise: { __typename?: 'ProductVariant', id: string, title: string, availableForSale: boolean, price: { __typename?: 'MoneyV2', amount: any, currencyCode: Types.CurrencyCode }, product: { __typename?: 'Product', title: string, vendor: string, featuredImage?: { __typename?: 'Image', url: any } | null } } }
          }> }, estimatedCost: { __typename?: 'CartEstimatedCost', subtotalAmount: { __typename?: 'MoneyV2', amount: any, currencyCode: Types.CurrencyCode }, totalTaxAmount?: { __typename?: 'MoneyV2', amount: any, currencyCode: Types.CurrencyCode } | null, totalAmount: { __typename?: 'MoneyV2', amount: any, currencyCode: Types.CurrencyCode } } } | null };
 
-export type UpdateCartLineMutationVariables = Types.Exact<{
+export type CartLinesUpdateMutationVariables = Types.Exact<{
   cartId: Types.Scalars['ID']['input'];
   lines: Array<Types.CartLineUpdateInput> | Types.CartLineUpdateInput;
 }>;
 
 
-export type UpdateCartLineMutation = { __typename?: 'Mutation', cartLinesUpdate?: { __typename?: 'CartLinesUpdatePayload', cart?: { __typename?: 'Cart', id: string, lines: { __typename?: 'BaseCartLineConnection', edges: Array<{ __typename?: 'BaseCartLineEdge', node:
+export type CartLinesUpdateMutation = { __typename?: 'Mutation', cartLinesUpdate?: { __typename?: 'CartLinesUpdatePayload', cart?: { __typename?: 'Cart', id: string, lines: { __typename?: 'BaseCartLineConnection', edges: Array<{ __typename?: 'BaseCartLineEdge', node:
             | { __typename?: 'CartLine', id: string, quantity: number }
             | { __typename?: 'ComponentizableCartLine', id: string, quantity: number }
            }> } } | null, userErrors: Array<{ __typename?: 'CartUserError', field?: Array<string> | null, message: string }> } | null };
 
-export type RemoveCartLineMutationVariables = Types.Exact<{
+export type CartLinesRemoveMutationVariables = Types.Exact<{
   cartId: Types.Scalars['ID']['input'];
   lineIds: Array<Types.Scalars['ID']['input']> | Types.Scalars['ID']['input'];
 }>;
 
 
-export type RemoveCartLineMutation = { __typename?: 'Mutation', cartLinesRemove?: { __typename?: 'CartLinesRemovePayload', cart?: { __typename?: 'Cart', id: string } | null, userErrors: Array<{ __typename?: 'CartUserError', field?: Array<string> | null, message: string }> } | null };
+export type CartLinesRemoveMutation = { __typename?: 'Mutation', cartLinesRemove?: { __typename?: 'CartLinesRemovePayload', cart?: { __typename?: 'Cart', id: string } | null, userErrors: Array<{ __typename?: 'CartUserError', field?: Array<string> | null, message: string }> } | null };
 
-export type AddToCartMutationVariables = Types.Exact<{
+export type CartLinesAddMutationVariables = Types.Exact<{
   cartId: Types.Scalars['ID']['input'];
   lines: Array<Types.CartLineInput> | Types.CartLineInput;
 }>;
 
 
-export type AddToCartMutation = { __typename?: 'Mutation', cartLinesAdd?: { __typename?: 'CartLinesAddPayload', cart?: { __typename?: 'Cart', id: string, lines: { __typename?: 'BaseCartLineConnection', edges: Array<{ __typename?: 'BaseCartLineEdge', node:
+export type CartLinesAddMutation = { __typename?: 'Mutation', cartLinesAdd?: { __typename?: 'CartLinesAddPayload', cart?: { __typename?: 'Cart', id: string, lines: { __typename?: 'BaseCartLineConnection', edges: Array<{ __typename?: 'BaseCartLineEdge', node:
             | { __typename?: 'CartLine', id: string, quantity: number, merchandise: { __typename?: 'ProductVariant', id: string, title: string, product: { __typename?: 'Product', title: string } } }
             | { __typename?: 'ComponentizableCartLine', id: string, quantity: number, merchandise: { __typename?: 'ProductVariant', id: string, title: string, product: { __typename?: 'Product', title: string } } }
            }> } } | null } | null };
-
-export type BuyNowMutationVariables = Types.Exact<{
-  lines: Array<Types.CartLineInput> | Types.CartLineInput;
-}>;
-
-
-export type BuyNowMutation = { __typename?: 'Mutation', cartCreate?: { __typename?: 'CartCreatePayload', cart?: { __typename?: 'Cart', id: string, checkoutUrl: any } | null } | null };
 
 export const CartLineVariantFragmentDoc = gql`
     fragment CartLineVariant on ProductVariant {
@@ -81,8 +74,8 @@ export const CartLineVariantFragmentDoc = gql`
   }
 }
     `;
-export const CreateCartDocument = gql`
-    mutation CreateCart($lines: [CartLineInput!], $buyerIdentity: CartBuyerIdentityInput) {
+export const CartCreateDocument = gql`
+    mutation cartCreate($lines: [CartLineInput!], $buyerIdentity: CartBuyerIdentityInput) {
   cartCreate(input: {lines: $lines, buyerIdentity: $buyerIdentity}) {
     cart {
       id
@@ -166,8 +159,8 @@ export const GetCartByIdDocument = gql`
   }
 }
     ${CartLineVariantFragmentDoc}`;
-export const UpdateCartLineDocument = gql`
-    mutation UpdateCartLine($cartId: ID!, $lines: [CartLineUpdateInput!]!) {
+export const CartLinesUpdateDocument = gql`
+    mutation cartLinesUpdate($cartId: ID!, $lines: [CartLineUpdateInput!]!) {
   cartLinesUpdate(cartId: $cartId, lines: $lines) {
     cart {
       id
@@ -187,8 +180,8 @@ export const UpdateCartLineDocument = gql`
   }
 }
     `;
-export const RemoveCartLineDocument = gql`
-    mutation RemoveCartLine($cartId: ID!, $lineIds: [ID!]!) {
+export const CartLinesRemoveDocument = gql`
+    mutation cartLinesRemove($cartId: ID!, $lineIds: [ID!]!) {
   cartLinesRemove(cartId: $cartId, lineIds: $lineIds) {
     cart {
       id
@@ -200,8 +193,8 @@ export const RemoveCartLineDocument = gql`
   }
 }
     `;
-export const AddToCartDocument = gql`
-    mutation AddToCart($cartId: ID!, $lines: [CartLineInput!]!) {
+export const CartLinesAddDocument = gql`
+    mutation cartLinesAdd($cartId: ID!, $lines: [CartLineInput!]!) {
   cartLinesAdd(cartId: $cartId, lines: $lines) {
     cart {
       id
@@ -226,16 +219,6 @@ export const AddToCartDocument = gql`
   }
 }
     `;
-export const BuyNowDocument = gql`
-    mutation BuyNow($lines: [CartLineInput!]!) {
-  cartCreate(input: {lines: $lines}) {
-    cart {
-      id
-      checkoutUrl
-    }
-  }
-}
-    `;
 
 export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string, operationType?: string, variables?: any) => Promise<T>;
 
@@ -244,23 +227,20 @@ const defaultWrapper: SdkFunctionWrapper = (action, _operationName, _operationTy
 
 export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = defaultWrapper) {
   return {
-    CreateCart(variables?: CreateCartMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<CreateCartMutation> {
-      return withWrapper((wrappedRequestHeaders) => client.request<CreateCartMutation>({ document: CreateCartDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'CreateCart', 'mutation', variables);
+    cartCreate(variables?: CartCreateMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<CartCreateMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<CartCreateMutation>({ document: CartCreateDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'cartCreate', 'mutation', variables);
     },
     GetCartById(variables: GetCartByIdQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<GetCartByIdQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetCartByIdQuery>({ document: GetCartByIdDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'GetCartById', 'query', variables);
     },
-    UpdateCartLine(variables: UpdateCartLineMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<UpdateCartLineMutation> {
-      return withWrapper((wrappedRequestHeaders) => client.request<UpdateCartLineMutation>({ document: UpdateCartLineDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'UpdateCartLine', 'mutation', variables);
+    cartLinesUpdate(variables: CartLinesUpdateMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<CartLinesUpdateMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<CartLinesUpdateMutation>({ document: CartLinesUpdateDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'cartLinesUpdate', 'mutation', variables);
     },
-    RemoveCartLine(variables: RemoveCartLineMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<RemoveCartLineMutation> {
-      return withWrapper((wrappedRequestHeaders) => client.request<RemoveCartLineMutation>({ document: RemoveCartLineDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'RemoveCartLine', 'mutation', variables);
+    cartLinesRemove(variables: CartLinesRemoveMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<CartLinesRemoveMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<CartLinesRemoveMutation>({ document: CartLinesRemoveDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'cartLinesRemove', 'mutation', variables);
     },
-    AddToCart(variables: AddToCartMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<AddToCartMutation> {
-      return withWrapper((wrappedRequestHeaders) => client.request<AddToCartMutation>({ document: AddToCartDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'AddToCart', 'mutation', variables);
-    },
-    BuyNow(variables: BuyNowMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<BuyNowMutation> {
-      return withWrapper((wrappedRequestHeaders) => client.request<BuyNowMutation>({ document: BuyNowDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'BuyNow', 'mutation', variables);
+    cartLinesAdd(variables: CartLinesAddMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<CartLinesAddMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<CartLinesAddMutation>({ document: CartLinesAddDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'cartLinesAdd', 'mutation', variables);
     }
   };
 }

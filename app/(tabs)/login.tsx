@@ -19,11 +19,10 @@ export default function LoginScreen() {
 
   // ✅ redirectUri — 반드시 scheme + path 유지
   const redirectUri = AuthSession.makeRedirectUri({
-    scheme: "myapp", // app.json의 "scheme" 값과 일치해야 함
-    path: "http://localhost:8081/auth/callback",
+    scheme: "miclosetapp", // app.json의 "scheme" 값과 일치해야 함
+    path: "auth/callback",
   });
-  console.log("Redirect URI:", redirectUri);
-
+  console.log(redirectUri);
   // ✅ Google OAuth 설정
   const discovery = {
     authorizationEndpoint: "https://accounts.google.com/o/oauth2/v2/auth",
@@ -34,12 +33,13 @@ export default function LoginScreen() {
   const [request, response, promptAsync] = AuthSession.useAuthRequest(
     {
       clientId: GOOGLE_CLIENT_ID,
-      redirectUri,
+      redirectUri: "https://auth.expo.io/minacoco/miclosetapp/redirect",
       scopes: ["openid", "profile", "email"],
       responseType: "code",
     },
     discovery
   );
+  console.log(response, "response!!");
 
   // ✅ OAuth 콜백 처리
   useEffect(() => {
@@ -125,27 +125,27 @@ export default function LoginScreen() {
   // ✅ Gluestack UI 기반 화면
   return (
     <AppContainer headerTitle="로그인" showBackButton>
-      <Box className="flex-1 items-center justify-center bg-white p-6 space-y-6">
+      <Box className="flex-1 items-center justify-center space-y-6 bg-white p-6">
         <Text className="text-2xl font-bold">로그인</Text>
 
         {loading ? (
           <Box className="mt-4 items-center justify-center">
             <ActivityIndicator size="large" />
-            <Text className="text-gray-500 mt-2">로그인 중...</Text>
+            <Text className="mt-2 text-gray-500">로그인 중...</Text>
           </Box>
         ) : (
           <Button
-            className="bg-red-500 rounded-xl w-full mt-2"
+            className="mt-2 w-full rounded-xl bg-red-500"
             onPress={() => promptAsync()}
             isDisabled={!request}
           >
-            <ButtonText className="text-white font-semibold text-base">
+            <ButtonText className="text-base font-semibold text-white">
               Google 계정으로 로그인
             </ButtonText>
           </Button>
         )}
 
-        <Text className="text-gray-400 text-center px-6 mt-6">
+        <Text className="mt-6 px-6 text-center text-gray-400">
           처음 로그인 시 자동으로 회원가입 페이지로 이동합니다.
         </Text>
       </Box>

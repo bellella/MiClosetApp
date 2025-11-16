@@ -20,8 +20,8 @@ export function AppContainer({ showHeaderLogo = false, showBackButton = false, h
     return (
         <ScrollView stickyHeaderIndices={[0]}>
             <AppHeader title={headerTitle} left={headerLeft} right={headerRight} showBackButton={showBackButton} showLogo={showHeaderLogo} showCart={showHeaderCart} showSearch={showHeaderSearch}/>
-            <Box className="w-screen items-center">
-                <View className="w-full max-w-[600px] self-center flex-1 bg-white">
+            <Box className="w-screen items-center min-h-[calc(100vh-100px)]">
+                <View className="w-full max-w-[600px] min-h-full self-center bg-white">
                     {children}
                 </View>
             </Box>

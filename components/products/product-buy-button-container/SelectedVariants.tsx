@@ -6,7 +6,7 @@ import { Pressable } from "@/components/ui/pressable";
 import { Feather } from "@expo/vector-icons";
 import { ProductVariantItem } from "@/lib/graphql/types/product.type";
 import { QuantitySelector } from "@/components/common/QuantitySelector";
-import { HStack } from "@/components/ui/hstack/index.web";
+import { HStack } from "@/components/ui/hstack";
 import { cn } from "@/lib/utils/classnames";
 
 type Props = {

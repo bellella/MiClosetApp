@@ -3,33 +3,45 @@ import { Box } from "@/components/ui/box";
 import { VStack } from "@/components/ui/vstack";
 import { HStack } from "@/components/ui/hstack";
 import { Text } from "@/components/ui/text";
-import { Button } from "@/components/ui/button";
 import { Image } from "@/components/ui/image";
 import { Pressable } from "@/components/ui/pressable";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import React from "react";
 import { FloatingButton } from "@/components/common/FloatingButton";
-import { router } from "expo-router";
-import useCart from "./useCart";
+import { QuantitySelector } from "@/components/common/QuantitySelector";
+import { useCart } from "./useCart";
+import { PageLoading } from "@/components/common/PageLoading";
+import { CheckoutWaitingAlert } from "@/components/common/CheckoutWaitingAlert";
+import { useCheckout } from "@/lib/hooks/useCheckout";
 
 export default function CartScreen() {
-  const { data: cart, isLoading, isError, updateLine, removeLine, handleCheckout } = useCart();
+  const {
+    data: cart,
+    isLoading,
+    isError,
+    updateLineQuantity,
+    removeLine,
+    isCheckoutInProgress,
+  } = useCart();
+  const { handleCheckout } = useCheckout();
+
+  const [selectedItems, setSelectedItems] = React.useState<Set<string>>(
+    new Set()
+  );
 
   if (isLoading) {
     return (
-      <AppContainer headerTitle="장바구니" showBackButton>
-        <VStack className="py-20 items-center">
-          <Text>불러오는 중...</Text>
-        </VStack>
+      <AppContainer headerTitle="Cart" showBackButton>
+        <PageLoading />
       </AppContainer>
     );
   }
 
   if (isError || !cart) {
     return (
-      <AppContainer headerTitle="장바구니" showBackButton>
-        <VStack className="py-20 items-center">
-          <Text>장바구니가 비어있습니다.</Text>
+      <AppContainer headerTitle="Cart" showBackButton>
+        <VStack className="items-center py-20">
+          <Text>Your cart is empty.</Text>
         </VStack>
       </AppContainer>
     );
@@ -38,22 +50,66 @@ export default function CartScreen() {
   const lines = cart.lines?.edges || [];
   const totalPrice = parseFloat(cart.estimatedCost?.totalAmount?.amount ?? "0");
 
+  const allItemIds = lines.map(({ node }) => node.id);
+  const isAllSelected =
+    allItemIds.length > 0 && allItemIds.every((id) => selectedItems.has(id));
+
+  const toggleSelectAll = () => {
+    if (isAllSelected) {
+      setSelectedItems(new Set());
+    } else {
+      setSelectedItems(new Set(allItemIds));
+    }
+  };
+
+  const toggleSelectItem = (itemId: string) => {
+    const newSelected = new Set(selectedItems);
+    if (newSelected.has(itemId)) {
+      newSelected.delete(itemId);
+    } else {
+      newSelected.add(itemId);
+    }
+    setSelectedItems(newSelected);
+  };
+
+  const handleDeleteSelected = () => {
+    selectedItems.forEach((itemId) => {
+      removeLine.mutate(itemId);
+    });
+    setSelectedItems(new Set());
+  };
+
   return (
     <>
-      <AppContainer headerTitle="장바구니" showBackButton>
+      <AppContainer headerTitle="Cart" showBackButton>
         <VStack className="space-y-4 px-4 pb-20">
-          {/* 전체 선택 / 삭제 */}
-          <HStack className="justify-between items-center">
-            <HStack className="items-center space-x-2">
-              <FontAwesome name="check-square" size={20} />
-              <Text>
-                전체선택 ({lines.length}/{lines.length})
+          {/* Select All / Delete */}
+          <HStack className="items-center justify-between">
+            <Pressable onPress={toggleSelectAll}>
+              <HStack className="items-center space-x-2">
+                <FontAwesome
+                  name={isAllSelected ? "check-square" : "square-o"}
+                  size={20}
+                  color={isAllSelected ? "#000" : "#999"}
+                />
+                <Text>
+                  Select All ({selectedItems.size}/{lines.length})
+                </Text>
+              </HStack>
+            </Pressable>
+            <Pressable
+              onPress={handleDeleteSelected}
+              disabled={selectedItems.size === 0}
+            >
+              <Text
+                className={`text-sm ${selectedItems.size > 0 ? "text-red-500" : "text-gray-400"}`}
+              >
+                Delete Items
               </Text>
-            </HStack>
-            <Text className="text-sm text-gray-400">상품삭제</Text>
+            </Pressable>
           </HStack>
 
-          {/* 장바구니 리스트 */}
+          {/* Cart Items */}
           {lines.map(({ node }) => {
             const variant = node.merchandise;
             const product = variant.product;
@@ -61,13 +117,21 @@ export default function CartScreen() {
             return (
               <Box
                 key={node.id}
-                className="border border-gray-200 rounded-xl p-4 space-y-2"
+                className="space-y-2 rounded-xl border border-gray-200 p-4"
               >
-                <FontAwesome name="check-square" size={20} />
+                <Pressable onPress={() => toggleSelectItem(node.id)}>
+                  <FontAwesome
+                    name={
+                      selectedItems.has(node.id) ? "check-square" : "square-o"
+                    }
+                    size={20}
+                    color={selectedItems.has(node.id) ? "#000" : "#999"}
+                  />
+                </Pressable>
                 <HStack className="space-x-4">
                   <Image
                     source={{ uri: product.featuredImage?.url }}
-                    className="w-24 h-32 rounded"
+                    className="h-32 w-24 rounded"
                     resizeMode="cover"
                   />
                   <VStack className="flex-1 space-y-1">
@@ -84,47 +148,25 @@ export default function CartScreen() {
                       {variant.title}
                     </Text>
 
-                    {/* 가격 */}
-                    <HStack className="space-x-2 items-center">
-                      <Text bold>{price.toLocaleString()}원</Text>
+                    {/* Price */}
+                    <HStack className="items-center space-x-2">
+                      <Text bold>${price.toLocaleString()}</Text>
                     </HStack>
 
-                    {/* 수량 변경 */}
-                    <HStack className="space-x-2 items-center">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="px-2 h-8"
-                        onPress={() =>
-                          updateLine.mutate({
-                            lineId: node.id,
-                            quantity: Math.max(node.quantity - 1, 1),
-                          })
-                        }
-                      >
-                        <FontAwesome name="minus" size={14} />
-                      </Button>
+                    {/* Quantity Selector */}
+                    <QuantitySelector
+                      quantity={node.quantity}
+                      onChange={(newQty) =>
+                        updateLineQuantity.mutate({
+                          lineId: node.id,
+                          quantity: newQty,
+                        })
+                      }
+                    />
 
-                      <Text className="mx-2">{node.quantity}</Text>
-
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="px-2 h-8"
-                        onPress={() =>
-                          updateLine.mutate({
-                            lineId: node.id,
-                            quantity: node.quantity + 1,
-                          })
-                        }
-                      >
-                        <FontAwesome name="plus" size={14} />
-                      </Button>
-                    </HStack>
-
-                    <Text className="text-sm text-gray-400 mt-2">
-                      상품 {price.toLocaleString()}원 × {node.quantity}개 ={" "}
-                      {(price * node.quantity).toLocaleString()}원
+                    <Text className="mt-2 text-sm text-gray-400">
+                      ${price.toLocaleString()} × {node.quantity} = $
+                      {(price * node.quantity).toLocaleString()}
                     </Text>
                   </VStack>
                 </HStack>
@@ -132,22 +174,24 @@ export default function CartScreen() {
             );
           })}
 
-          {/* 결제 예상 금액 */}
-          <Box className="border border-gray-200 rounded-xl p-4 space-y-3 bg-white">
-            <Text bold>결제 예상 금액</Text>
+          {/* Order Summary */}
+          <Box className="space-y-3 rounded-xl border border-gray-200 bg-white p-4">
+            <Text bold>Order Summary</Text>
             <HStack className="justify-between">
-              <Text>상품금액</Text>
-              <Text>{totalPrice.toLocaleString()}원</Text>
+              <Text>Subtotal</Text>
+              <Text>${totalPrice.toLocaleString()}</Text>
             </HStack>
             <HStack className="justify-between">
-              <Text>배송비</Text>
-              <Text>0원</Text>
+              <Text>Shipping</Text>
+              <Text>Free</Text>
             </HStack>
             <Box className="border-t border-gray-200 pt-3">
               <HStack className="justify-between">
-                <Text bold>총 결제 금액</Text>
-                <Text bold className="text-pink-500">
-                  {totalPrice.toLocaleString()}원
+                <Text bold size="lg">
+                  Total
+                </Text>
+                <Text bold size="lg" className="text-primary-600">
+                  ${totalPrice.toLocaleString()}
                 </Text>
               </HStack>
             </Box>
@@ -155,11 +199,12 @@ export default function CartScreen() {
         </VStack>
       </AppContainer>
 
-      <FloatingButton onPress={() => handleCheckout()}>
-        <Text className="text-white font-bold text-base">
-          {totalPrice.toLocaleString()}원 구매하기
+      <FloatingButton onPress={() => handleCheckout(cart.checkoutUrl)}>
+        <Text className="text-base font-bold text-white">
+          Checkout - ${totalPrice.toLocaleString()}
         </Text>
       </FloatingButton>
+      <CheckoutWaitingAlert isOpen={isCheckoutInProgress} />
     </>
   );
 }

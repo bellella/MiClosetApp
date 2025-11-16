@@ -15,6 +15,9 @@ import { ProductOption } from "@/lib/graphql/shopify.schema";
 import { ProductVariantFragment } from "@/lib/graphql/products/products.graphql";
 import { useProductBuy } from "./useProductBuy"; // ✅ 훅 import
 import { Button } from "@/components/common/Button";
+import { useCheckout } from "@/lib/hooks/useCheckout";
+import { useToast } from "@/components/ui/toast";
+import { useToastMessage } from "@/lib/hooks/useToastMessage";
 
 type Props = {
   options: Pick<ProductOption, "name" | "values">[];
@@ -23,28 +26,36 @@ type Props = {
 
 export function ProductBuyButtonContainer({ options, variants }: Props) {
   const [isOpen, setIsOpen] = useState(false);
+  const { showSuccess } = useToastMessage();
   const {
     selectedVariants,
     totalPrice,
     handleOptionSelect,
     updateQuantity,
     removeVariant,
-    addToCart,
+    cartLinesAdd,
     buyNow,
   } = useProductBuy(options, variants);
+  const toast = useToast();
+  const { handleCheckout } = useCheckout();
 
   const handleOpen = () => setIsOpen(true);
   const handleClose = () => setIsOpen(false);
 
+  const isVariantsEmpty = selectedVariants.length === 0;
+
   const handleAddToCart = async () => {
-    await addToCart.mutateAsync();
+    await cartLinesAdd
+      .mutateAsync()
+      .then(() => showSuccess("Your item is added to cart"))
+      .catch(() => showSuccess("Failed to add items to cart"));
     setIsOpen(false);
   };
 
   const handleBuyNow = async () => {
     const checkoutUrl = await buyNow.mutateAsync();
     if (checkoutUrl) {
-      console.log("Go to checkout:", checkoutUrl);
+      handleCheckout(checkoutUrl);
     }
   };
 
@@ -52,13 +63,13 @@ export function ProductBuyButtonContainer({ options, variants }: Props) {
     <>
       {/* Floating 구매 버튼 */}
       <FloatingButton onPress={handleOpen}>
-        <Text className="text-white font-bold text-base">구매하기</Text>
+        <Text className="text-base font-bold text-white">구매하기</Text>
       </FloatingButton>
       {/* Actionsheet */}
       <Actionsheet isOpen={isOpen} onClose={handleClose}>
         <ActionsheetBackdrop />
-        <ActionsheetContent className="max-w-app w-full self-center">
-          <ScrollView className="w-full h-[70vh] p-4">
+        <ActionsheetContent className="w-full max-w-app self-center">
+          <ScrollView className="h-[70vh] w-full p-4">
             <OptionsSelector options={options} onSelect={handleOptionSelect} />
 
             {selectedVariants.length > 0 && (
@@ -71,10 +82,10 @@ export function ProductBuyButtonContainer({ options, variants }: Props) {
           </ScrollView>
 
           {/* 하단 결제 영역 */}
-          <View className="w-full border-t border-gray-200 p-4 bg-white">
-            <View className="flex-row justify-between items-center mb-2">
-              <Text className="flex-1 font-medium text-lg">총 금액</Text>
-              <Text className="font-bold text-lg">
+          <View className="w-full border-t border-gray-200 bg-white p-4">
+            <View className="mb-2 flex-row items-center justify-between">
+              <Text className="flex-1 text-lg font-medium">총 금액</Text>
+              <Text className="text-lg font-bold">
                 {totalPrice.toLocaleString()} KRW
               </Text>
             </View>
@@ -84,7 +95,7 @@ export function ProductBuyButtonContainer({ options, variants }: Props) {
                 variant="outline"
                 className="flex-1"
                 onPress={handleBuyNow}
-                disabled={buyNow.isPending}
+                disabled={isVariantsEmpty || buyNow.isPending}
                 loading={buyNow.isPending}
               >
                 바로구매
@@ -94,8 +105,8 @@ export function ProductBuyButtonContainer({ options, variants }: Props) {
                 variant="solid"
                 className="flex-1"
                 onPress={handleAddToCart}
-                disabled={addToCart.isPending}
-                loading={addToCart.isPending}
+                disabled={isVariantsEmpty || cartLinesAdd.isPending}
+                loading={cartLinesAdd.isPending}
               >
                 장바구니 담기
               </Button>

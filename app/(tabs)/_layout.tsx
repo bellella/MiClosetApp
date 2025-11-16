@@ -21,6 +21,8 @@ export default function TabLayout() {
           width: "100%",
           alignSelf: "center",
         },
+               tabBarActiveTintColor: "rgb(153 122 159)",
+        tabBarInactiveTintColor: "rgb(171 164 174)",
       }}
     >
       <Tabs.Screen

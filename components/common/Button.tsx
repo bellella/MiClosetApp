@@ -28,24 +28,12 @@ export const Button: React.FC<Props> = ({
   return (
     <GluestackButton
       isDisabled={disabled || loading}
-      className={`rounded-lg h-12 px-4 justify-center ${className}`}
+      className={`h-12 justify-center rounded-lg px-4 ${className}`}
       style={style}
       {...props}
     >
-      {loading ? (
-        <ButtonSpinner
-          color={props.variant === "outline" ? "$textLight700" : "$white"}
-          size="small"
-        />
-      ) : (
-        <ButtonText
-          className={`font-semibold ${
-            props.variant === "outline" ? "text-gray-800" : "text-white"
-          }`}
-        >
-          {children as React.ReactNode}
-        </ButtonText>
-      )}
+      <ButtonText>{children as React.ReactNode}</ButtonText>
+      {loading && <ButtonSpinner color="purple" size="small" />}
     </GluestackButton>
   );
 };

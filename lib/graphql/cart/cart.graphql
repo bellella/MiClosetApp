@@ -15,7 +15,7 @@ fragment CartLineVariant on ProductVariant {
 }
 
 # ✅ 카트 생성 (처음 담기 전용)
-mutation CreateCart($lines: [CartLineInput!], $buyerIdentity: CartBuyerIdentityInput) {
+mutation cartCreate($lines: [CartLineInput!], $buyerIdentity: CartBuyerIdentityInput) {
   cartCreate(input: { lines: $lines, buyerIdentity: $buyerIdentity }) {
     cart {
       id
@@ -78,7 +78,7 @@ query GetCartById($id: ID!) {
 }
 
 # 수량/옵션 업데이트
-mutation UpdateCartLine($cartId: ID!, $lines: [CartLineUpdateInput!]!) {
+mutation cartLinesUpdate($cartId: ID!, $lines: [CartLineUpdateInput!]!) {
   cartLinesUpdate(cartId: $cartId, lines: $lines) {
     cart {
       id
@@ -91,7 +91,7 @@ mutation UpdateCartLine($cartId: ID!, $lines: [CartLineUpdateInput!]!) {
 }
 
 # 라인 삭제
-mutation RemoveCartLine($cartId: ID!, $lineIds: [ID!]!) {
+mutation cartLinesRemove($cartId: ID!, $lineIds: [ID!]!) {
   cartLinesRemove(cartId: $cartId, lineIds: $lineIds) {
     cart { id }
     userErrors { field message }
@@ -99,7 +99,7 @@ mutation RemoveCartLine($cartId: ID!, $lineIds: [ID!]!) {
 }
 
 # 장바구니에 상품 추가
-mutation AddToCart($cartId: ID!, $lines: [CartLineInput!]!) {
+mutation cartLinesAdd($cartId: ID!, $lines: [CartLineInput!]!) {
   cartLinesAdd(cartId: $cartId, lines: $lines) {
     cart {
       id
@@ -123,14 +123,3 @@ mutation AddToCart($cartId: ID!, $lines: [CartLineInput!]!) {
     }
   }
 }
-
-# 바로 구매 (cart 생성 + checkoutUrl)
-mutation BuyNow($lines: [CartLineInput!]!) {
-  cartCreate(input: { lines: $lines }) {
-    cart {
-      id
-      checkoutUrl
-    }
-  }
-}
-
