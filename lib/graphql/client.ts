@@ -1,12 +1,11 @@
-import { GraphQLClient } from 'graphql-request';
-import { getSdk as getProductsSdk } from './products/products.graphql';
-import { getSdk as getCartSdk } from './cart/cart.graphql';
-import { getSdk as getOrderSdk } from './orders/orders.graphql';
-import { getSdk as getCustomersSdk } from './customers/customers.graphql';
-import { getSdk as getAuthSdk } from './auth/auth.graphql';
+import { GraphQLClient } from "graphql-request";
+import { getSdk as getProductsSdk } from "./products/products.graphql";
+import { getSdk as getCartSdk } from "./cart/cart.graphql";
+import { getSdk as getOrderSdk } from "./orders/orders.graphql";
+import { getSdk as getCustomersSdk } from "./customers/customers.graphql";
+import { getSdk as getAuthSdk } from "./auth/auth.graphql";
 
-
-const gqlClient = new GraphQLClient('http://172.30.1.44:4000/shopify');
+const gqlClient = new GraphQLClient("http://172.30.1.86:4000/shopify");
 
 // const client = createStorefrontApiClient({
 //   storeDomain: 'https://miicloset.myshopify.com',

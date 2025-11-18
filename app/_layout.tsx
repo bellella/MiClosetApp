@@ -19,7 +19,6 @@ import { useLayoutStore } from "@/lib/stores/layout.store";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { QueryClient } from "@tanstack/react-query";
 import { ApolloProvider } from "@apollo/client";
-import client from "@/lib/api/apollo-client";
 import { AuthProvider } from "@/components/app/AuthProvider";
 
 export {
@@ -77,27 +76,25 @@ function RootLayoutNav() {
         <SafeAreaProvider>
           <SafeAreaView edges={["top"]} style={{ flex: 1 }}>
             <QueryClientProvider client={queryClient}>
-              <ApolloProvider client={client}>
-                <AuthProvider>
-                  <Stack>
-                    <Stack.Screen
-                      name="(tabs)"
-                      options={{ headerShown: false }}
-                    />
-                    <Stack.Screen
-                      name="(stack)"
-                      options={{ headerShown: false }}
-                    />
-                    <Stack.Screen
-                      name="modal"
-                      options={{ presentation: "modal" }}
-                    />
-                    <Stack.Protected guard={__DEV__}>
-                      <Stack.Screen name="storybook" />
-                    </Stack.Protected>
-                  </Stack>
-                </AuthProvider>
-              </ApolloProvider>
+              <AuthProvider>
+                <Stack>
+                  <Stack.Screen
+                    name="(tabs)"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="(stack)"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="modal"
+                    options={{ presentation: "modal" }}
+                  />
+                  <Stack.Protected guard={__DEV__}>
+                    <Stack.Screen name="storybook" />
+                  </Stack.Protected>
+                </Stack>
+              </AuthProvider>
             </QueryClientProvider>
           </SafeAreaView>
         </SafeAreaProvider>

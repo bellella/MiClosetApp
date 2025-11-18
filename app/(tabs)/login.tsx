@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, Alert } from "react-native";
+import { ActivityIndicator, Alert, Platform } from "react-native";
 import * as AuthSession from "expo-auth-session";
+import * as Google from "expo-auth-session/providers/google";
 import { useRouter } from "expo-router";
 import { useAuthStore } from "@/lib/stores/auth.store";
 import { AppContainer } from "@/components/app/app-container";
@@ -9,116 +10,107 @@ import { Box } from "@/components/ui/box";
 import { Text } from "@/components/ui/text";
 import { Button, ButtonText } from "@/components/ui/button";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useAuthRequest } from "expo-auth-session";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
-const GOOGLE_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID!;
-
+// only app
+const googleSigninConfigure = () => {
+  GoogleSignin.configure({
+    webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
+    iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_LIENT_ID,
+    scopes: ["openid", "profile", "email"],
+  });
+};
+const redirectUri = AuthSession.makeRedirectUri({
+  path: "auth/callback",
+  scheme: "miclosetapp",
+});
 export default function LoginScreen() {
   const router = useRouter();
   const { login } = useAuthStore();
   const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    googleSigninConfigure();
+  }, []);
 
-  // ✅ redirectUri — 반드시 scheme + path 유지
-  const redirectUri = AuthSession.makeRedirectUri({
-    scheme: "miclosetapp", // app.json의 "scheme" 값과 일치해야 함
-    path: "auth/callback",
-  });
-  console.log(redirectUri);
-  // ✅ Google OAuth 설정
-  const discovery = {
-    authorizationEndpoint: "https://accounts.google.com/o/oauth2/v2/auth",
-    tokenEndpoint: "https://oauth2.googleapis.com/token",
+  const onGoogleButtonPress = async () => {
+    promptAsync();
+    return;
+    if (Platform.OS === "web") {
+      promptAsync();
+    } else {
+      await GoogleSignin.signIn();
+      const { accessToken } = await GoogleSignin.getTokens();
+      tokenHandle(accessToken);
+    }
+  };
+  // ✅ 로그인 요청 준비
+  const [request, response, promptAsync] = Google.useAuthRequest(
+    {
+      webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID!,
+      iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_LIENT_ID,
+      redirectUri,
+      scopes: ["openid", "profile", "email"],
+      responseType: "token",
+    }
+    // {
+    //   authorizationEndpoint: "https://accounts.google.com/o/oauth2/v2/auth",
+    //   tokenEndpoint: "https://oauth2.googleapis.com/token",
+    // }
+  );
+  const tokenHandle = async (access_token: string) => {
+    console.log(access_token, "token....");
+    try {
+      setLoading(true);
+      // ✅ Google userinfo 가져오기
+      const userInfoResponse = await fetch(
+        "https://www.googleapis.com/oauth2/v3/userinfo",
+        {
+          headers: { Authorization: `Bearer ${access_token}` },
+        }
+      );
+      const user = await userInfoResponse.json();
+      console.log(user, "user다");
+
+      // ✅ Shopify 로그인 시도
+      const defaultPassword = `${user.email}_social`;
+      const { customerAccessTokenCreate } =
+        await shopifySdk.auth.CustomerAccessTokenCreate({
+          input: { email: user.email, password: defaultPassword },
+        });
+
+      const token = customerAccessTokenCreate?.customerAccessToken?.accessToken;
+
+      if (token) {
+        // Shopify에 고객 존재 → 로그인 성공
+        await AsyncStorage.setItem("customerAccessToken", token);
+
+        await login({
+          user: { id: user.sub, name: user.name, email: user.email },
+          accessToken: token,
+          refreshToken: "",
+        });
+
+        router.replace("/mypage");
+      } else {
+        // Shopify에 고객 없음 → 회원가입 페이지로 이동
+        router.push({
+          pathname: "/auth/signup",
+          params: { email: user.email, name: user.name },
+        });
+      }
+    } catch (err) {
+      console.error(err);
+      Alert.alert("로그인 실패", "인증 중 오류가 발생했습니다.");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // ✅ 로그인 요청 준비
-  const [request, response, promptAsync] = AuthSession.useAuthRequest(
-    {
-      clientId: GOOGLE_CLIENT_ID,
-      redirectUri: "https://auth.expo.io/minacoco/miclosetapp/redirect",
-      scopes: ["openid", "profile", "email"],
-      responseType: "code",
-    },
-    discovery
-  );
-  console.log(response, "response!!");
-
-  // ✅ OAuth 콜백 처리
   useEffect(() => {
-    const exchangeCodeForToken = async (code: string) => {
-      try {
-        setLoading(true);
-
-        const body = new URLSearchParams({
-          client_id: GOOGLE_CLIENT_ID,
-          code,
-          redirect_uri: redirectUri,
-          grant_type: "authorization_code",
-          client_secret: "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",
-          code_verifier: request?.codeVerifier as string,
-        });
-
-        const res = await fetch(discovery.tokenEndpoint!, {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: body.toString(),
-        });
-
-        const tokenData = await res.json();
-
-        if (tokenData.error) {
-          console.error(tokenData);
-          throw new Error(
-            tokenData.error_description || "Token exchange failed"
-          );
-        }
-
-        // ✅ Google userinfo 가져오기
-        const userInfoResponse = await fetch(
-          "https://www.googleapis.com/oauth2/v3/userinfo",
-          {
-            headers: { Authorization: `Bearer ${tokenData.access_token}` },
-          }
-        );
-        const user = await userInfoResponse.json();
-
-        // ✅ Shopify 로그인 시도
-        const defaultPassword = `${user.email}_social`;
-        const { customerAccessTokenCreate } =
-          await shopifySdk.auth.CustomerAccessTokenCreate({
-            input: { email: user.email, password: defaultPassword },
-          });
-
-        const token =
-          customerAccessTokenCreate?.customerAccessToken?.accessToken;
-
-        if (token) {
-          // Shopify에 고객 존재 → 로그인 성공
-          await AsyncStorage.setItem("customerAccessToken", token);
-
-          await login({
-            user: { id: user.sub, name: user.name, email: user.email },
-            accessToken: token,
-            refreshToken: tokenData.refresh_token ?? null,
-          });
-
-          router.replace("/mypage");
-        } else {
-          // Shopify에 고객 없음 → 회원가입 페이지로 이동
-          router.push({
-            pathname: "/auth/signup",
-            params: { email: user.email, name: user.name },
-          });
-        }
-      } catch (err) {
-        console.error(err);
-        Alert.alert("로그인 실패", "인증 중 오류가 발생했습니다.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (response?.type === "success") {
-      const { code } = response.params;
-      exchangeCodeForToken(code);
+    if (response && response?.type === "success") {
+      const { access_token } = response.params;
+      tokenHandle(access_token);
     }
   }, [response]);
 
@@ -136,7 +128,7 @@ export default function LoginScreen() {
         ) : (
           <Button
             className="mt-2 w-full rounded-xl bg-red-500"
-            onPress={() => promptAsync()}
+            onPress={() => onGoogleButtonPress()}
             isDisabled={!request}
           >
             <ButtonText className="text-base font-semibold text-white">

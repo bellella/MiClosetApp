@@ -15,14 +15,18 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.minacoco.MiClosetApp"
+      "bundleIdentifier": "com.minacoco.MiClosetApp",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.minacoco.MiClosetApp"
     },
     "web": {
       "bundler": "metro",
@@ -38,7 +42,13 @@
           "experimentalLauncherActivity": true
         }
       ],
-      "expo-font"
+      "expo-font",
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.87904558771-uv73ajc9k9o2ncu4182js9nejpg9jerl"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

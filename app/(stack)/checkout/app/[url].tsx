@@ -18,14 +18,12 @@ export default function CheckoutScreen() {
   };
 
   return (
-    <AppContainer headerTitle="checkout" showBackButton>
-      <WebView
-        source={{ uri: decodedUrl }}
-        startInLoadingState
-        javaScriptEnabled
-        domStorageEnabled
-        onNavigationStateChange={handleNavigationStateChange}
-      />
-    </AppContainer>
+    <WebView
+      source={{ uri: decodedUrl }}
+      startInLoadingState
+      javaScriptEnabled
+      domStorageEnabled
+      onNavigationStateChange={handleNavigationStateChange}
+    />
   );
 }
