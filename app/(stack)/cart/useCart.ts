@@ -5,9 +5,9 @@ import { useCheckout } from "@/lib/hooks/useCheckout";
 import { CART_KEY } from "@/constants/common";
 import { useState } from "react";
 
-export function useCart() {
+export default function useCart() {
   const queryClient = useQueryClient();
-  const { handleCheckoutUrl } = useCheckout();
+  const { handleCheckout } = useCheckout();
   const [isCheckoutInProgress, setIsCheckoutInProgress] = useState(false);
 
   /** 로컬 저장된 cartId 가져오기 */
@@ -102,19 +102,6 @@ export function useCart() {
     },
     onSuccess: () => refetch(),
   });
-
-  /** 구매 버튼 눌렀을 때 분기 */
-  const handleCheckout = async () => {
-    const checkoutUrl = data?.checkoutUrl;
-    if (!checkoutUrl) return;
-
-    setIsCheckoutInProgress(true);
-    try {
-      await handleCheckoutUrl(checkoutUrl);
-    } finally {
-      setIsCheckoutInProgress(false);
-    }
-  };
 
   return {
     data,

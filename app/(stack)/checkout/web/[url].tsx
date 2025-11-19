@@ -25,7 +25,8 @@ export default function CheckoutWebScreen() {
     const interval = setInterval(() => {
       if (popup.closed) {
         clearInterval(interval);
-        router.push("/order");
+        setIsCheckoutInProgress(false);
+        router.push("/orders");
         return;
       }
     }, 400);

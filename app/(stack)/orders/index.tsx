@@ -8,6 +8,7 @@ import { AppContainer } from "@/components/app/app-container";
 import { OrderItemCard } from "@/components/orders/OrderItemCard";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { View } from "@/components/Themed";
+import { OrderListSkeleton } from "@/components/skeletons/OrderListSkeleton";
 
 export default function OrdersScreen() {
 const fetchOrders = async ({ pageParam }: { pageParam?: string }) => {
@@ -31,6 +32,7 @@ const fetchOrders = async ({ pageParam }: { pageParam?: string }) => {
     isFetchingNextPage,
     isRefetching,
     refetch,
+    isLoading,
   } = useInfiniteQuery({
     queryKey: ["orders"],
     queryFn: fetchOrders,
@@ -46,6 +48,14 @@ const fetchOrders = async ({ pageParam }: { pageParam?: string }) => {
     return <OrderItemCard key={order.id} order={order} />;
   }, []);
 
+  if (isLoading) {
+    return (
+      <AppContainer headerTitle="주문·배송" showBackButton>
+        <OrderListSkeleton />
+      </AppContainer>
+    );
+  }
+
   return (
     <AppContainer headerTitle="주문·배송" showBackButton>
       <FlatList
@@ -60,7 +70,7 @@ const fetchOrders = async ({ pageParam }: { pageParam?: string }) => {
         }
         ListEmptyComponent={
           <View className="items-center justify-center mt-20">
-            <Text className="text-gray-400">주문 내역이 없습니다.</Text>
+            <Text className="text-gray-400">No orders yet</Text>
           </View>
         }
         ListFooterComponent={
