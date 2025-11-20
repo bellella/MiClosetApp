@@ -10,7 +10,7 @@ type ProductGridProps = {
   onPressMore?: () => void;
 };
 
-export function ProductCollectionGrid({
+export function ProductListGrid({
   products,
   title,
   onPressMore,

@@ -11,7 +11,7 @@ type ProductSliderProps = {
   onPressMore?: () => void;
 };
 
-export function ProductCollectionSlider({
+export function ProductListSlider({
   products,
   title,
   onPressMore,

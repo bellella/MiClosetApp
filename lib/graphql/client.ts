@@ -4,6 +4,7 @@ import { getSdk as getCartSdk } from "./cart/cart.graphql";
 import { getSdk as getOrderSdk } from "./orders/orders.graphql";
 import { getSdk as getCustomersSdk } from "./customers/customers.graphql";
 import { getSdk as getAuthSdk } from "./auth/auth.graphql";
+import { getSdk as getCategoriesSdk } from "./categories/categories.graphql";
 
 const gqlClient = new GraphQLClient("http://172.30.1.86:4000/shopify");
 
@@ -23,6 +24,7 @@ function createShopifySdk(client: any) {
     cart: getCartSdk(client),
     orders: getOrderSdk(client),
     auth: getAuthSdk(client),
+    categories: getCategoriesSdk(client),
     // collections: getCollectionsSdk(client),
     customers: getCustomersSdk(client),
   };

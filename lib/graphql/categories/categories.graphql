@@ -1,0 +1,47 @@
+fragment CollectionBasic on Collection {
+  id
+  title
+  handle
+  image {
+    url
+    altText
+  }
+}
+
+query GetCategories {
+  menu(handle: "categories") {
+    title
+    items {
+      title
+      resource {
+        __typename
+        ...CollectionBasic
+      }
+      items {
+        title
+        resource {
+          __typename
+          ...CollectionBasic
+        }
+      }
+    }
+  }
+}
+
+query GetSubCategories($id: ID!) {
+  collection(id: $id) {
+    id
+    title
+    handle
+
+    metafield(namespace: "custom", key: "sub_collection") {
+      type
+      references(first: 50) {
+        nodes {
+          __typename
+          ...CollectionBasic
+        }
+      }
+    }
+  }
+}

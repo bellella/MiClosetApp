@@ -63,12 +63,39 @@ fragment ProductVariant on ProductVariant {
   }
 }
 
-query GetCollectionProducts($handle: String!, $first: Int!) {
+query GetCollectionProductsByHandle($handle: String!, $first: Int!) {
   collection(handle: $handle) {
     id
     title
-    description
     products(first: $first) {
+      nodes {
+        id
+        title
+        handle
+        featuredImage {
+          url
+          altText
+        }
+        priceRange {
+          minVariantPrice {
+            amount
+            currencyCode
+          }
+        }
+      }
+    }
+  }
+}
+
+query GetCollectionProductsById($id: ID!, $first: Int = 20, $after: String) {
+  collection(id: $id) {
+    id
+    title
+    products(first: $first, after: $after) {
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
       nodes {
         id
         title
