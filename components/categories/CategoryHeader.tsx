@@ -1,7 +1,7 @@
 import { ScrollView, Pressable, View, Text } from "react-native";
-import { useQuery } from "@tanstack/react-query";
 import { useLocalSearchParams, router } from "expo-router";
-import { shopifySdk } from "@/lib/graphql/client";
+import { useCategories, useSubCategories } from "@/lib/hooks/useCategories";
+import { CustomScrollView } from "../common/CustomScrollView";
 
 export function CategoryHeader() {
   const { categoryId, subCategoryId } = useLocalSearchParams<{
@@ -13,29 +13,10 @@ export function CategoryHeader() {
   }
 
   // ─────────────── 상위 카테고리 ───────────────
-  const { data: topData, isLoading: loadingTop } = useQuery({
-    queryKey: ["categories"],
-    queryFn: async () => {
-      const res = await shopifySdk.categories.GetCategories();
-      return res.menu?.items;
-    },
-  });
-
-  const topCategories = topData ?? [];
+  const { categories: topCategories, isLoading: loadingTop } = useCategories();
 
   // ─────────────── 하위 카테고리 ───────────────
-  const { data: subData } = useQuery({
-    queryKey: ["subCategories", categoryId],
-    queryFn: async () => {
-      if (!categoryId) return [];
-      const res = await shopifySdk.categories.GetSubCategories({
-        id: categoryId,
-      });
-      return res?.collection?.metafield?.references?.nodes ?? [];
-    },
-  });
-
-  const subCategories = subData ?? [];
+  const { subCategories } = useSubCategories(categoryId);
 
   if (loadingTop) return null;
 
@@ -57,9 +38,9 @@ export function CategoryHeader() {
   return (
     <View className="bg-white">
       {/* ─────────────── Top Categories ─────────────── */}
-      <ScrollView
+      <CustomScrollView
+        scrollVisible="hover"
         horizontal
-        showsHorizontalScrollIndicator={false}
         className="border-b border-gray-200"
       >
         {topCategories.map(({ resource: cat }) => {
@@ -81,13 +62,13 @@ export function CategoryHeader() {
             </Pressable>
           );
         })}
-      </ScrollView>
+      </CustomScrollView>
 
       {/* ─────────────── Sub Categories ─────────────── */}
       {categoryId && subCategories && (
-        <ScrollView
+        <CustomScrollView
+          scrollVisible="hover"
           horizontal
-          showsHorizontalScrollIndicator={false}
           className="border-b border-gray-200"
         >
           {/* ALL (sub categories) */}
@@ -123,7 +104,7 @@ export function CategoryHeader() {
               </Pressable>
             );
           })}
-        </ScrollView>
+        </CustomScrollView>
       )}
     </View>
   );

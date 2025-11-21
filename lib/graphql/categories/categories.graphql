@@ -45,3 +45,22 @@ query GetSubCategories($id: ID!) {
     }
   }
 }
+
+query GetAllCategoriesByIds($ids: [ID!]!) {
+  nodes(ids: $ids) {
+    ... on Collection {
+      id
+      title
+      metafield(namespace: "custom", key: "sub_collection") {
+        references(first: 20) {
+          nodes {
+            ... on Collection {
+              id
+              title
+            }
+          }
+        }
+      }
+    }
+  }
+}

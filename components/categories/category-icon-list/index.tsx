@@ -1,32 +1,12 @@
-import React, { useRef, useMemo } from "react";
-import {
-  Image,
-  TouchableOpacity,
-  View,
-  Dimensions,
-  ActivityIndicator,
-} from "react-native";
-import Carousel, { ICarouselInstance } from "react-native-reanimated-carousel";
+import React from "react";
+import { Image, TouchableOpacity, View, ActivityIndicator } from "react-native";
 import { Text } from "@/components/ui/text";
-import { useQuery } from "@tanstack/react-query";
-import { shopifySdk } from "@/lib/graphql/client";
 import { Link } from "expo-router";
-import { MenuItem } from "@/types";
+import { useCategories } from "@/lib/hooks/useCategories";
+import { CustomScrollView } from "@/components/common/CustomScrollView";
 
-const VISIBLE_ITEMS = 8;
-const WRAPPER_WIDTH = 600;
-const ITEM_WIDTH = WRAPPER_WIDTH / VISIBLE_ITEMS;
-
-export function CategoryListSlider() {
-  const ref = useRef<ICarouselInstance>(null);
-
-  const { data, isLoading } = useQuery({
-    queryKey: ["categories"],
-    queryFn: async () => {
-      const res = await shopifySdk.categories.GetCategories();
-      return res.menu?.items as MenuItem[];
-    },
-  });
+export function CategoryIconList() {
+  const { categories, isLoading } = useCategories();
 
   if (isLoading) {
     return (
@@ -38,26 +18,21 @@ export function CategoryListSlider() {
     );
   }
 
-  if (!data?.length) {
+  if (!categories.length) {
     return null;
   }
 
   return (
-    <Carousel
-      ref={ref}
-      loop={false}
-      data={data}
-      width={ITEM_WIDTH}
-      height={100}
-      style={{
-        width: WRAPPER_WIDTH,
-        paddingLeft: 10,
-      }}
-      scrollAnimationDuration={300}
-      renderItem={({ item }) => {
+    <CustomScrollView
+      scrollVisible="hover"
+      horizontal
+      contentContainerStyle={{ paddingHorizontal: 10, gap: 16 }}
+    >
+      {categories.map((item) => {
         const category = item.resource!;
         return (
           <Link
+            key={item.id}
             href={{
               pathname: "/categories/products",
               params: {
@@ -70,6 +45,7 @@ export function CategoryListSlider() {
               style={{
                 alignItems: "center",
                 justifyContent: "center",
+                width: 75,
               }}
               activeOpacity={0.8}
             >
@@ -90,11 +66,13 @@ export function CategoryListSlider() {
                   />
                 )}
               </View>
-              <Text size="xs">{item.title}</Text>
+              <Text size="xs" className="mt-1 text-center">
+                {item.title}
+              </Text>
             </TouchableOpacity>
           </Link>
         );
-      }}
-    />
+      })}
+    </CustomScrollView>
   );
 }

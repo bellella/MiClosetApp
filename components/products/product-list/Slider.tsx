@@ -4,6 +4,7 @@ import { useRouter } from "expo-router";
 import { ProductCardSmall } from "../product-card/Small";
 import { CollectionProduct } from "@/lib/graphql/types/product.type";
 import { ProductListBase } from "./Base";
+import { CustomFlatList } from "@/components/common/CustomFaltList";
 
 type ProductSliderProps = {
   products: CollectionProduct[];
@@ -28,13 +29,12 @@ export function ProductListSlider({
 
   return (
     <ProductListBase title={title} onPressMore={onPressMore}>
-      <FlatList
+      <CustomFlatList
         data={products}
         horizontal
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item: CollectionProduct) => item.id.toString()}
         renderItem={renderItem}
         contentContainerStyle={{ paddingHorizontal: 8, gap: 8 }}
-        showsHorizontalScrollIndicator={false}
       />
     </ProductListBase>
   );

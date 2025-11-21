@@ -43,6 +43,61 @@ export type GetSubCategoriesQuery = { __typename?: 'QueryRoot', collection?: { _
           | { __typename: 'Video' }
         > } | null } | null } | null };
 
+export type GetAllCategoriesByIdsQueryVariables = Types.Exact<{
+  ids: Array<Types.Scalars['ID']['input']> | Types.Scalars['ID']['input'];
+}>;
+
+
+export type GetAllCategoriesByIdsQuery = { __typename?: 'QueryRoot', nodes: Array<
+    | { __typename?: 'AppliedGiftCard' }
+    | { __typename?: 'Article' }
+    | { __typename?: 'Blog' }
+    | { __typename?: 'Cart' }
+    | { __typename?: 'CartLine' }
+    | { __typename?: 'Collection', id: string, title: string, metafield?: { __typename?: 'Metafield', references?: { __typename?: 'MetafieldReferenceConnection', nodes: Array<
+            | { __typename?: 'Collection', id: string, title: string }
+            | { __typename?: 'GenericFile' }
+            | { __typename?: 'MediaImage' }
+            | { __typename?: 'Metaobject' }
+            | { __typename?: 'Model3d' }
+            | { __typename?: 'Page' }
+            | { __typename?: 'Product' }
+            | { __typename?: 'ProductVariant' }
+            | { __typename?: 'Video' }
+          > } | null } | null }
+    | { __typename?: 'Comment' }
+    | { __typename?: 'Company' }
+    | { __typename?: 'CompanyContact' }
+    | { __typename?: 'CompanyLocation' }
+    | { __typename?: 'ComponentizableCartLine' }
+    | { __typename?: 'ExternalVideo' }
+    | { __typename?: 'GenericFile' }
+    | { __typename?: 'Location' }
+    | { __typename?: 'MailingAddress' }
+    | { __typename?: 'Market' }
+    | { __typename?: 'MediaImage' }
+    | { __typename?: 'MediaPresentation' }
+    | { __typename?: 'Menu' }
+    | { __typename?: 'MenuItem' }
+    | { __typename?: 'Metafield' }
+    | { __typename?: 'Metaobject' }
+    | { __typename?: 'Model3d' }
+    | { __typename?: 'Order' }
+    | { __typename?: 'Page' }
+    | { __typename?: 'Product' }
+    | { __typename?: 'ProductOption' }
+    | { __typename?: 'ProductOptionValue' }
+    | { __typename?: 'ProductVariant' }
+    | { __typename?: 'Shop' }
+    | { __typename?: 'ShopPayInstallmentsFinancingPlan' }
+    | { __typename?: 'ShopPayInstallmentsFinancingPlanTerm' }
+    | { __typename?: 'ShopPayInstallmentsProductVariantPricing' }
+    | { __typename?: 'ShopPolicy' }
+    | { __typename?: 'TaxonomyCategory' }
+    | { __typename?: 'UrlRedirect' }
+    | { __typename?: 'Video' }
+   | null> };
+
 export const CollectionBasicFragmentDoc = gql`
     fragment CollectionBasic on Collection {
   id
@@ -93,6 +148,26 @@ export const GetSubCategoriesDocument = gql`
   }
 }
     ${CollectionBasicFragmentDoc}`;
+export const GetAllCategoriesByIdsDocument = gql`
+    query GetAllCategoriesByIds($ids: [ID!]!) {
+  nodes(ids: $ids) {
+    ... on Collection {
+      id
+      title
+      metafield(namespace: "custom", key: "sub_collection") {
+        references(first: 20) {
+          nodes {
+            ... on Collection {
+              id
+              title
+            }
+          }
+        }
+      }
+    }
+  }
+}
+    `;
 
 export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string, operationType?: string, variables?: any) => Promise<T>;
 
@@ -106,6 +181,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     GetSubCategories(variables: GetSubCategoriesQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<GetSubCategoriesQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetSubCategoriesQuery>({ document: GetSubCategoriesDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'GetSubCategories', 'query', variables);
+    },
+    GetAllCategoriesByIds(variables: GetAllCategoriesByIdsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<GetAllCategoriesByIdsQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetAllCategoriesByIdsQuery>({ document: GetAllCategoriesByIdsDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'GetAllCategoriesByIds', 'query', variables);
     }
   };
 }

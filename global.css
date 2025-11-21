@@ -1,3 +1,5 @@
+@import "./theme/custom-scroll.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
