@@ -2,11 +2,7 @@
 import React, { useState } from "react";
 import { ScrollView } from "react-native";
 import { Text } from "@/components/ui/text";
-import {
-  Actionsheet,
-  ActionsheetBackdrop,
-  ActionsheetContent,
-} from "@/components/ui/actionsheet";
+import { AppActionSheet } from "@/components/app/AppActionSheet";
 import { FloatingButton } from "@/components/common/FloatingButton";
 import { OptionsSelector } from "./OptionsSelector";
 import { SelectedVariants } from "./SelectedVariants";
@@ -66,10 +62,8 @@ export function ProductBuyButtonContainer({ options, variants }: Props) {
         <Text className="text-base font-bold text-white">구매하기</Text>
       </FloatingButton>
       {/* Actionsheet */}
-      <Actionsheet isOpen={isOpen} onClose={handleClose}>
-        <ActionsheetBackdrop />
-        <ActionsheetContent className="w-full max-w-app self-center">
-          <ScrollView className="h-[70vh] w-full p-4">
+      <AppActionSheet isOpen={isOpen} onClose={handleClose}>
+        <ScrollView className="h-[70vh] w-full p-4">
             <OptionsSelector options={options} onSelect={handleOptionSelect} />
 
             {selectedVariants.length > 0 && (
@@ -112,8 +106,7 @@ export function ProductBuyButtonContainer({ options, variants }: Props) {
               </Button>
             </View>
           </View>
-        </ActionsheetContent>
-      </Actionsheet>
+      </AppActionSheet>
     </>
   );
 }
