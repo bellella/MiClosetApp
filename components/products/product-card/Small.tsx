@@ -8,7 +8,7 @@ type ProductCardSmallProps = {
 
   onPress?: () => void;
   width?: DimensionValue;
-};      
+};
 
 export function ProductCardSmall({
   className,

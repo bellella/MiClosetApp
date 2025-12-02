@@ -5,25 +5,29 @@ export const client = algoliasearch(
   process.env.EXPO_PUBLIC_ALGOLIA_API_KEY!
 );
 
-const indexName = "shopify_products";
+export enum AlgoliaIndex {
+  PRODUCTS = "shopify_products",
+  PRODUCTS_POPULAR = "shopify_products_recently_ordered_count_desc",
+  PRODUCTS_NEWEST = "shopify_products_id_desc",
+  PRODUCTS_PRICE_ASC = "shopify_products_price_asc",
+  PRODUCTS_PRICE_DESC = "shopify_products_price_desc",
+}
 
+export type AlgoliaSearchParams = { index?: AlgoliaIndex; searchParams?: any };
 export const algolia = {
-  // 🔍 일반 검색
-  search: (query: string, options: any = {}) => {
+  search: async (
+    query: string,
+    {
+      index = AlgoliaIndex.PRODUCTS,
+      searchParams = {},
+    }: AlgoliaSearchParams = {}
+  ) => {
     return client.searchSingleIndex({
-      indexName,
+      indexName: index,
       searchParams: {
         query,
-        ...options,
+        ...searchParams,
       },
-    });
-  },
-
-  // 🔎 facet value 검색
-  searchFacets: (facetName: string) => {
-    return client.searchForFacetValues({
-      indexName,
-      facetName,
     });
   },
 };

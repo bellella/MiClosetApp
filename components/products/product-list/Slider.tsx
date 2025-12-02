@@ -5,9 +5,10 @@ import { ProductCardSmall } from "../product-card/Small";
 import { CollectionProduct } from "@/lib/graphql/types/product.type";
 import { ProductListBase } from "./Base";
 import { CustomFlatList } from "@/components/common/CustomFaltList";
+import { ProductItem } from "@/types";
 
 type ProductSliderProps = {
-  products: CollectionProduct[];
+  products: ProductItem[];
   title?: string;
   onPressMore?: () => void;
 };

@@ -1,6 +1,6 @@
 import { cn } from "@gluestack-ui/utils/nativewind-utils";
 import React from "react";
-import { ScrollView } from "react-native";
+import { Platform, ScrollView } from "react-native";
 
 type Props = React.ComponentProps<typeof ScrollView> & {
   className?: string;
@@ -19,6 +19,7 @@ export function CustomScrollView({
 }: Props) {
   const scrollClass =
     scrollVisible === "hover" ? "scroll-hover" : "scroll-always";
+  const showsHorizontalScrollIndicator = Platform.OS === "web";
 
   return (
     <ScrollView
@@ -29,6 +30,8 @@ export function CustomScrollView({
         }),
         ...style,
       }}
+      showsHorizontalScrollIndicator={showsHorizontalScrollIndicator}
+      showsVerticalScrollIndicator={true}
       {...rest}
     >
       {children}

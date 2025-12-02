@@ -1,5 +1,5 @@
 // app/search/result.tsx
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -9,12 +9,16 @@ import {
   Pressable,
 } from "react-native";
 import { useLocalSearchParams } from "expo-router";
-import { algolia } from "@/lib/algolia/client";
+import {
+  algolia,
+  AlgoliaSearchParams,
+  AlgoliaIndex,
+} from "@/lib/algolia/client";
 import { AppContainer } from "@/components/app/app-container";
 import {
   SearchFilters,
   SearchFiltersContainer,
-} from "@/components/search/SearchFiltersContainers";
+} from "@/components/search/search-filters-containers";
 
 export default function SearchResultScreen() {
   const { keyword: initialKeyword } = useLocalSearchParams<{
@@ -23,26 +27,37 @@ export default function SearchResultScreen() {
 
   const [keyword, setKeyword] = useState(initialKeyword || "");
   const [hits, setHits] = useState<any[]>([]);
+  const [facets, setFacets] = useState<any>({});
   const [loading, setLoading] = useState(false);
 
-  /* ------------------------------
-      🔥 실행하는 검색 함수
-  ------------------------------ */
   const runSearch = async (filters?: SearchFilters) => {
     setLoading(true);
 
-    const searchParams: any = {
-      facetFilters: buildFacetFilters(filters),
-      facets: ["options.color", "options.size", "price_range", "product_type"],
-      filters: buildNumericFilters(filters),
-      distinct: true,
+    const searchParams: AlgoliaSearchParams = {
+      index: (filters?.sort as AlgoliaIndex) || AlgoliaIndex.PRODUCTS,
+      searchParams: {
+        facetFilters: buildFacetFilters(filters),
+        filters: buildNumericFilters(filters),
+        facets: [
+          "options.color",
+          "options.size",
+          "product_type",
+          "price_range",
+        ],
+        distinct: true,
+      },
     };
 
     const res = await algolia.search(keyword, searchParams);
 
     setHits(res.hits);
+    setFacets(res.facets || {});
     setLoading(false);
   };
+
+  useEffect(() => {
+    runSearch();
+  }, []);
 
   return (
     <AppContainer headerTitle="Search" showBackButton={true}>
@@ -67,10 +82,13 @@ export default function SearchResultScreen() {
         </Pressable>
       </View>
 
-      {/* ----------------------------  
+      {/* ----------------------------
            🔽 필터 (ActionSheet)
       ---------------------------- */}
-      <SearchFiltersContainer onApplyFilters={(f) => runSearch(f)} />
+      <SearchFiltersContainer
+        facets={facets}
+        onApplyFilters={(f) => runSearch(f)}
+      />
 
       {/* ---------------------------- */}
       {loading ? (
@@ -111,12 +129,12 @@ function buildFacetFilters(filters?: SearchFilters) {
     facetFilters.push(filters.colors.map((c) => `options.color:${c}`));
   }
 
-  if (filters.categories?.length) {
-    facetFilters.push(filters.categories.map((c) => `category:${c}`));
+  if (filters.sizes?.length) {
+    facetFilters.push(filters.sizes.map((s) => `options.size:${s}`));
   }
 
-  if (filters.materials?.length) {
-    facetFilters.push(filters.materials.map((m) => `material:${m}`));
+  if (filters.productTypes?.length) {
+    facetFilters.push(filters.productTypes.map((p) => `product_type:${p}`));
   }
 
   return facetFilters.length > 0 ? facetFilters : undefined;
