@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { storage } from "../utils/storage";
 import { ShopifyCustomer } from "../api/model";
+import { shopifyGetCustomer } from "../api/generated/shopify/shopify";
 
 // type User = { id: string; name: string; email: string };
 
@@ -22,17 +23,10 @@ export const useAuthStore = create<AuthState>((set) => ({
   isRestoring: true,
   isLoggedIn: false,
   restoreUser: async () => {
-    const savedUser = await storage.getItem("user");
-    const savedAccess = await storage.getItem("accessToken");
-    const savedRefresh = await storage.getItem("refreshToken");
+    const customer = await shopifyGetCustomer();
 
-    if (savedUser && savedAccess) {
-      set({
-        user: JSON.parse(savedUser),
-        accessToken: savedAccess,
-        refreshToken: savedRefresh,
-        isLoggedIn: true,
-      });
+    if (customer) {
+      set({ user: customer, isLoggedIn: true });
     }
 
     set({ isRestoring: false });

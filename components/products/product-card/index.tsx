@@ -3,10 +3,11 @@ import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { HStack } from "@/components/ui/hstack";
 import { Pressable } from "@/components/ui/pressable";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { Heart } from "lucide-react-native";
 import { DimensionValue } from "react-native";
 import { Image } from "@/components/ui/image";
 import { CollectionProduct, ProductItem } from "@/types";
+import { useWishlist } from "@/lib/hooks/useWishlist";
 
 export type ProductCardBaseProps = {
   product: ProductItem;
@@ -17,6 +18,7 @@ export type ProductCardBaseProps = {
   showHeart?: boolean;
   onPress?: () => void;
   className?: string;
+  isInWishlist?: boolean;
 };
 
 const DEFAULT_ASPECT_RATIO = 5 / 6;
@@ -31,10 +33,17 @@ export function ProductCard({
   onPress,
   className,
 }: ProductCardBaseProps) {
+  const { isLiked, toggleWishlist } = useWishlist(product.id, product.isLiked);
+  const handleHeartPress = (e: any) => {
+    e.stopPropagation();
+    if (!product.id) return;
+    toggleWishlist();
+  };
+
   return (
     <Pressable style={{ width }} onPress={onPress} className={className}>
       <VStack className="gap-y-1">
-        {/* ---------- 썸네일 ---------- */}
+        {/* Image Thumbnail */}
         <Box
           className="relative w-full overflow-hidden"
           style={{ aspectRatio }}
@@ -50,13 +59,20 @@ export function ProductCard({
           )}
 
           {showHeart && (
-            <Box className="absolute right-2 top-2">
-              <FontAwesome name="heart-o" size={18} color="#9CA3AF" />
-            </Box>
+            <Pressable
+              className="absolute right-2 top-2 p-1"
+              onPress={handleHeartPress}
+            >
+              <Heart
+                size={18}
+                color={isLiked ? "#EF4444" : "hotpink"}
+                fill={isLiked ? "#EF4444" : "none"}
+              />
+            </Pressable>
           )}
         </Box>
 
-        {/* ---------- 정보 영역 ---------- */}
+        {/* Product Info */}
         <VStack className="px-1">
           <Text size={fontSize} className="text-gray-700" numberOfLines={2}>
             {product.title}

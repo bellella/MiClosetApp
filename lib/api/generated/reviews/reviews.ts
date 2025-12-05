@@ -10,6 +10,8 @@ import type {
   DeleteResultDto,
   GetMyReviewsResponse,
   Review,
+  ReviewsControllerGetAllByProductIdParams,
+  ReviewsControllerGetAllByUserIdParams,
   UpdateReviewDto,
   UpdateReviewResponse
 } from '../../model';
@@ -31,18 +33,21 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
       options);
     }
   export const reviewsGetAllByUserId = (
-    
+    params?: ReviewsControllerGetAllByUserIdParams,
  options?: SecondParameter<typeof customInstance<GetMyReviewsResponse>>,) => {
       return customInstance<GetMyReviewsResponse>(
-      {url: `/api/reviews/me`, method: 'GET'
+      {url: `/api/reviews/me`, method: 'GET',
+        params
     },
       options);
     }
   export const reviewsGetAllByProductId = (
     productId: string,
+    params?: ReviewsControllerGetAllByProductIdParams,
  options?: SecondParameter<typeof customInstance<Review[]>>,) => {
       return customInstance<Review[]>(
-      {url: `/api/reviews/product/${productId}`, method: 'GET'
+      {url: `/api/reviews/product/${productId}`, method: 'GET',
+        params
     },
       options);
     }

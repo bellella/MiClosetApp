@@ -115,21 +115,30 @@ query GetCollectionProductsById($id: ID!, $first: Int = 20, $after: String) {
   }
 }
 
-# fragment ProductCard on Product {
-#   id
-#   title
-#   handle
-#   featuredImage {
-#     url
-#     altText
-#   }
-#   priceRange {
-#     minVariantPrice {
-#       amount
-#       currencyCode
-#     }
-#   }
-# }
+query getProductsByIds($ids: [ID!]!) {
+  nodes(ids: $ids) {
+    ... on Product {
+      ...ProductCard
+    }
+  }
+}
+
+fragment ProductCard on Product {
+  id
+  title
+  handle
+  availableForSale
+  featuredImage {
+    url
+    altText
+  }
+  priceRange {
+    minVariantPrice {
+      amount
+      currencyCode
+    }
+  }
+}
 
 fragment ProductOptionsSelectorItem on ProductOption {
   name

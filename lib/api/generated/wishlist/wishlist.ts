@@ -7,7 +7,9 @@
  */
 import type {
   AddWishlistDto,
-  WishlistItem
+  GetMyWishlistResponse,
+  WishlistControllerGetMyWishListParams,
+  WishlistControllerRemoveParams
 } from '../../model';
 
 import { customInstance } from '../../axios-client';
@@ -16,11 +18,12 @@ import { customInstance } from '../../axios-client';
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 
-  export const wishlistGetAll = (
-    
- options?: SecondParameter<typeof customInstance<WishlistItem[]>>,) => {
-      return customInstance<WishlistItem[]>(
-      {url: `/api/wishlist`, method: 'GET'
+  export const wishlistGetMyWishList = (
+    params?: WishlistControllerGetMyWishListParams,
+ options?: SecondParameter<typeof customInstance<GetMyWishlistResponse>>,) => {
+      return customInstance<GetMyWishlistResponse>(
+      {url: `/api/wishlist`, method: 'GET',
+        params
     },
       options);
     }
@@ -35,13 +38,14 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
       options);
     }
   export const wishlistRemove = (
-    productId: string,
+    params: WishlistControllerRemoveParams,
  options?: SecondParameter<typeof customInstance<void>>,) => {
       return customInstance<void>(
-      {url: `/api/wishlist/${productId}`, method: 'DELETE'
+      {url: `/api/wishlist`, method: 'DELETE',
+        params
     },
       options);
     }
-  export type WishlistGetAllResult = NonNullable<Awaited<ReturnType<typeof wishlistGetAll>>>
+  export type WishlistGetMyWishListResult = NonNullable<Awaited<ReturnType<typeof wishlistGetMyWishList>>>
 export type WishlistAddResult = NonNullable<Awaited<ReturnType<typeof wishlistAdd>>>
 export type WishlistRemoveResult = NonNullable<Awaited<ReturnType<typeof wishlistRemove>>>

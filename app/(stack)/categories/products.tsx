@@ -3,6 +3,8 @@ import { CategoryHeader } from "@/components/categories/CategoryHeader";
 import { ProductListGrid } from "@/components/products/product-list/Grid";
 import { shopifySdk } from "@/lib/graphql/client";
 import { useCategoryTitle } from "@/lib/hooks/useCategoryTitle";
+import { useWishlistIds } from "@/lib/hooks/useWishlist";
+import { shopifyToProductCards } from "@/lib/utils/product.utils";
 import { useQuery } from "@tanstack/react-query";
 import { useLocalSearchParams } from "expo-router";
 import { ActivityIndicator, View, Text } from "react-native";
@@ -12,6 +14,7 @@ export default function Categories() {
     categoryId?: string;
     subCategoryId?: string;
   }>();
+  const { data: wishListData } = useWishlistIds();
 
   const collectionId = subCategoryId || categoryId;
 
@@ -52,7 +55,11 @@ export default function Categories() {
         </View>
       )}
 
-      {!isLoading && !isError && <ProductListGrid products={products} />}
+      {!isLoading && !isError && (
+        <ProductListGrid
+          products={shopifyToProductCards(products, wishListData?.idsMap)}
+        />
+      )}
     </AppContainer>
   );
 }

@@ -6,6 +6,7 @@ import { ProductCollectionProps } from "@/types";
 import { ProductListGrid } from "../products/product-list/Grid";
 import { ProductListSlider } from "../products/product-list/Slider";
 import { shopifyToProductCards } from "@/lib/utils/product.utils";
+import { useWishlistIds } from "@/lib/hooks/useWishlist";
 
 export type ProductUIType = "grid" | "slider";
 
@@ -24,6 +25,7 @@ const collectionUIMap: Record<
 };
 
 export function HomeCollections() {
+  const { data: wishListData } = useWishlistIds();
   const results = useQueries({
     queries: COLLECTIONS.map(({ handle }) => ({
       queryKey: ["collection", handle],
@@ -34,6 +36,7 @@ export function HomeCollections() {
         }),
     })),
   });
+  console.log(wishListData?.idsMap, "??");
 
   return (
     <>
@@ -42,7 +45,10 @@ export function HomeCollections() {
         if (isLoading || isError || !data?.collection) return null;
 
         const Component = collectionUIMap[ui];
-        const products = shopifyToProductCards(data.collection.products.nodes);
+        const products = shopifyToProductCards(
+          data.collection.products.nodes,
+          wishListData?.idsMap
+        );
         return (
           <Box key={handle} className="space-y-4">
             <Component

@@ -1,4 +1,5 @@
 import { ProductItem, CollectionProduct } from "@/types/product.type";
+import { WishListMap } from "../hooks/useWishlist";
 
 /**
  * Algolia에서 반환되는 Product 타입
@@ -23,14 +24,16 @@ export type AlgoliaProduct = {
  * @param product - Shopify GraphQL에서 반환된 CollectionProduct
  * @returns ProductCard 타입
  */
-export function shopifyToProductCard(product: CollectionProduct): ProductItem {
+export function shopifyToProductCard(
+  product: CollectionProduct,
+  wishListMap?: WishListMap
+): ProductItem {
   const price = Number(product.priceRange?.minVariantPrice?.amount ?? 0);
   const compareAtPrice = 0; // TODO: compareAtPrice 필드 추가 필요
   const discountRate =
     compareAtPrice > 0
       ? Math.round(((compareAtPrice - price) / compareAtPrice) * 100)
       : 0;
-
   return {
     id: product.id,
     title: product.title,
@@ -40,7 +43,7 @@ export function shopifyToProductCard(product: CollectionProduct): ProductItem {
     price,
     discountRate,
     reviewCount: 0, // TODO: 리뷰 데이터 추가 필요
-    isLiked: false, // TODO: 좋아요 상태 확인 필요
+    isLiked: wishListMap?.[product.id] ?? false,
   };
 }
 
@@ -50,9 +53,10 @@ export function shopifyToProductCard(product: CollectionProduct): ProductItem {
  * @returns ProductCard 배열
  */
 export function shopifyToProductCards(
-  products: CollectionProduct[]
+  products: CollectionProduct[],
+  wishListMap?: WishListMap
 ): ProductItem[] {
-  return products.map(shopifyToProductCard);
+  return products.map((p) => shopifyToProductCard(p, wishListMap));
 }
 
 /**
@@ -60,7 +64,10 @@ export function shopifyToProductCards(
  * @param product - Algolia에서 반환된 AlgoliaProduct
  * @returns ProductCard 타입
  */
-export function algoliaToProductCard(product: AlgoliaProduct): ProductItem {
+export function algoliaToProductCard(
+  product: AlgoliaProduct,
+  wishListMap?: WishListMap
+): ProductItem {
   const price = product.price || 0;
   const compareAtPrice = product.compare_at_price || 0;
   const discountRate =
@@ -77,7 +84,7 @@ export function algoliaToProductCard(product: AlgoliaProduct): ProductItem {
     price,
     discountRate,
     reviewCount: 0, // TODO: 리뷰 데이터 추가 필요
-    isLiked: false, // TODO: 좋아요 상태 확인 필요
+    isLiked: wishListMap?.[product.objectID] ?? false,
   };
 }
 
@@ -87,7 +94,8 @@ export function algoliaToProductCard(product: AlgoliaProduct): ProductItem {
  * @returns ProductCard 배열
  */
 export function algoliaToProductCards(
-  products: AlgoliaProduct[]
+  products: AlgoliaProduct[],
+  wishListMap?: WishListMap
 ): ProductItem[] {
-  return products.map(algoliaToProductCard);
+  return products.map((p) => shopifyToProductCard(p, wishListMap));
 }

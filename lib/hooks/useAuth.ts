@@ -1,6 +1,5 @@
 import { useAuthStore } from "@/lib/stores/auth.store";
 import { shopifyGetCustomer } from "@/lib/api/generated/shopify/shopify";
-import type { User } from "@/lib/api/model/user";
 
 export const useAuth = () => {
   const { login: storeLogin, logout: storeLogout } = useAuthStore();
