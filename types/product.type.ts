@@ -1,13 +1,19 @@
-import { GetCollectionProductsQuery, ProductVariantFragment } from "@/lib/graphql/products/products.graphql";
+import {
+  GetCollectionProductsQuery,
+  ProductVariantFragment,
+} from "@/lib/graphql/products/products.graphql";
 import { ProductOption } from "@/lib/graphql/shopify.schema";
 
-export type ProductCard = {
+export type ProductItem = {
   id: string;
-  name: string;
-  brand: string;
+  title: string;
+  brand?: string;
   description: string;
-  image: string;
+  imageUrl?: string;
+  imageUrls?: string[];
+  imageAlt?: string;
   price: number;
+  currency?: string;
   discountRate: number;
   reviewCount: number;
   isLiked: boolean;
@@ -56,9 +62,7 @@ export type CollectionProduct = NonNullable<
   GetCollectionProductsQuery["collection"]
 >["products"]["nodes"][number];
 
-export type Collection = NonNullable<
-  GetCollectionProductsQuery["collection"]
->;
+export type Collection = NonNullable<GetCollectionProductsQuery["collection"]>;
 
 export type ProductCollectionProps = {
   products: CollectionProduct[];

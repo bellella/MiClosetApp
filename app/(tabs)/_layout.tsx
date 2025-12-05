@@ -21,7 +21,7 @@ export default function TabLayout() {
           width: "100%",
           alignSelf: "center",
         },
-               tabBarActiveTintColor: "rgb(153 122 159)",
+        tabBarActiveTintColor: "rgb(153 122 159)",
         tabBarInactiveTintColor: "rgb(171 164 174)",
       }}
     >
@@ -54,7 +54,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="(auth)/wishlist"
+        name="(user)/wishlist"
         options={{
           title: "찜",
           tabBarIcon: ({ color, size }) => (
@@ -63,7 +63,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="(auth)/mypage"
+        name="(user)/mypage"
         options={{
           title: "마이페이지",
           tabBarIcon: ({ color, size }) => (

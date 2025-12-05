@@ -4,7 +4,6 @@ import {
   View,
   Text,
   ActivityIndicator,
-  FlatList,
   TextInput,
   Pressable,
 } from "react-native";
@@ -19,6 +18,12 @@ import {
   SearchFilters,
   SearchFiltersContainer,
 } from "@/components/search/search-filters-containers";
+import {
+  algoliaToProductCards,
+  AlgoliaProduct,
+} from "@/lib/utils/product.utils";
+import { ProductListGrid } from "@/components/products/product-list/Grid";
+import { ProductItem } from "@/types/product.type";
 
 export default function SearchResultScreen() {
   const { keyword: initialKeyword } = useLocalSearchParams<{
@@ -26,7 +31,7 @@ export default function SearchResultScreen() {
   }>();
 
   const [keyword, setKeyword] = useState(initialKeyword || "");
-  const [hits, setHits] = useState<any[]>([]);
+  const [products, setProducts] = useState<ProductItem[]>([]);
   const [facets, setFacets] = useState<any>({});
   const [loading, setLoading] = useState(false);
 
@@ -50,7 +55,9 @@ export default function SearchResultScreen() {
 
     const res = await algolia.search(keyword, searchParams);
 
-    setHits(res.hits);
+    // Algolia 결과를 ProductItem으로 변환
+    const productCards = algoliaToProductCards(res.hits as AlgoliaProduct[]);
+    setProducts(productCards);
     setFacets(res.facets || {});
     setLoading(false);
   };
@@ -96,21 +103,7 @@ export default function SearchResultScreen() {
           <ActivityIndicator size="large" />
         </View>
       ) : (
-        <FlatList
-          data={hits}
-          keyExtractor={(item) => item.objectID}
-          renderItem={({ item }) => (
-            <View className="border-b border-gray-200 p-4">
-              <Text className="font-semibold">{item.title}</Text>
-              <Text className="text-gray-500">{item.vendor}</Text>
-              {item.price && (
-                <Text className="mt-1 font-medium">
-                  {Number(item.price).toLocaleString()}원
-                </Text>
-              )}
-            </View>
-          )}
-        />
+        <ProductListGrid products={products} />
       )}
     </AppContainer>
   );
