@@ -1,29 +1,15 @@
 import React, { useCallback } from "react";
 import { ActivityIndicator, FlatList, RefreshControl } from "react-native";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { shopifySdk } from "@/lib/graphql/client";
 import { Box } from "@/components/ui/box";
 import { Text } from "@/components/ui/text";
 import { AppContainer } from "@/components/app/app-container";
 import { OrderItemCard } from "@/components/orders/OrderItemCard";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { View } from "@/components/Themed";
 import { OrderListSkeleton } from "@/components/skeletons/OrderListSkeleton";
+import { shopifyGetCustomerOrders } from "@/lib/api/generated/shopify/shopify";
 
 export default function OrdersScreen() {
-  const fetchOrders = async ({ pageParam }: { pageParam?: string }) => {
-    const token = await AsyncStorage.getItem("customerAccessToken"); // 로그인 시 저장된 토큰
-    if (!token) throw new Error("로그인이 필요합니다.");
-
-    const { customer } = await shopifySdk.orders.GetCustomerOrders({
-      customerAccessToken: token,
-      first: 10,
-      after: pageParam ?? null,
-    });
-
-    return customer?.orders;
-  };
-
   const {
     data,
     fetchNextPage,
@@ -34,19 +20,23 @@ export default function OrdersScreen() {
     isLoading,
   } = useInfiniteQuery({
     queryKey: ["orders"],
-    queryFn: fetchOrders,
-    getNextPageParam: (lastPage) =>
-      lastPage?.pageInfo?.hasNextPage
-        ? lastPage?.pageInfo?.endCursor
-        : undefined,
-    initialPageParam: undefined,
+    queryFn: async ({ pageParam }) => {
+      const response = await shopifyGetCustomerOrders({
+        cursorString: pageParam,
+      });
+
+      return {
+        items: response.items,
+        nextCursor: response.nextCursor,
+      };
+    },
+    getNextPageParam: (lastPage) => lastPage?.nextCursor,
+    initialPageParam: "",
+    select: (data) => data.pages.flatMap((page) => page.items) ?? [],
   });
 
-  const orders = data?.pages.flatMap((p) => p?.edges || []) ?? [];
-
   const renderItem = useCallback(({ item }: any) => {
-    const order = item.node;
-    return <OrderItemCard key={order.id} order={order} />;
+    return <OrderItemCard key={item.id} order={item} />;
   }, []);
 
   if (isLoading) {
@@ -60,8 +50,8 @@ export default function OrdersScreen() {
   return (
     <AppContainer headerTitle="주문·배송" showBackButton>
       <FlatList
-        data={orders}
-        keyExtractor={(item) => item.node.id}
+        data={data}
+        keyExtractor={(item) => item.id}
         renderItem={renderItem}
         contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 80 }}
         onEndReached={() => hasNextPage && fetchNextPage()}

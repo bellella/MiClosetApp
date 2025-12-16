@@ -1,144 +1,149 @@
-// components/products/ProductReviewSection.tsx
-import { Pressable, View } from "react-native";
+import { Pressable, View, ActivityIndicator } from "react-native";
 import { Text } from "@/components/ui/text";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Image } from "@/components/ui/image";
-
-type Review = {
-  id: number;
-  user: string;
-  rating: number;
-  content: string;
-  createdAt: string;
-};
+import { Star } from "lucide-react-native";
+import { useQuery } from "@tanstack/react-query";
+import { reviewsGetAllByProductId } from "@/lib/api/generated/reviews/reviews";
+import { useRouter } from "expo-router";
 
 type Props = {
-  reviews?: Review[];
+  productId: string;
 };
 
-export const dummyReviews = [
-    {
-      id: 1,
-      user: "choi****",
-      rating: 5,
-      content: "사진보다 실물이 훨씬 예뻐요! 재질도 부드럽고 맘에 들어요.",
-      createdAt: "2024.12.01",
-      image: require("#/images/review1.webp"),
-    },
-    {
-      id: 2,
-      user: "lee****",
-      rating: 4,
-      content: "핏 괜찮고 배송도 빨라요. 색상이 화면이랑 거의 같아요.",
-      createdAt: "2024.12.02",
-      image: require("#/images/review2.webp"),
-    },
-    {
-      id: 3,
-      user: "park****",
-      rating: 3,
-      content: "무난한 편인데 조금 크게 나왔어요. 참고하셔야 할 듯.",
-      createdAt: "2024.12.03",
-    },
-    {
-      id: 4,
-      user: "kang****",
-      rating: 5,
-      content: "선물했는데 받는 분이 너무 좋아했어요 :) 재구매 의사 있음!",
-      createdAt: "2024.12.04",
-    },
-    {
-      id: 5,
-      user: "hong****",
-      rating: 4,
-      content: "디자인은 예쁜데 생각보다 얇아서 봄에 입기 좋아요.",
-      createdAt: "2024.12.05",
-    },
-  ];
+export function ProductDetailReview({ productId }: Props) {
+  const router = useRouter();
 
-  export function ProductDetailReview() {
-    const reviews = dummyReviews;
-  
-    const imageReviews = reviews.filter((r) => r.image);
-    const textReviews = reviews.filter((r) => !r.image);
-  
-    if (reviews.length === 0) {
-      return (
-        <View className="mt-10">
-          <Text bold size="md" className="mb-2">상품 리뷰</Text>
-          <Text size="sm" className="text-gray-400">아직 등록된 리뷰가 없습니다.</Text>
-        </View>
-      );
-    }
-  
+  const { data, isLoading } = useQuery({
+    queryKey: ["product-reviews", productId],
+    queryFn: () =>
+      reviewsGetAllByProductId(encodeURIComponent(productId), { limit: 10 }),
+    enabled: !!productId,
+  });
+
+  if (isLoading) {
     return (
-      <View className="mt-10 space-y-8">
-        <Text bold size="md">상품 리뷰</Text>
-  
-        {/* 📸 이미지 리뷰 카드 */}
-        {imageReviews.length > 0 && (
-          <View className="flex-row flex-wrap gap-3">
-            {imageReviews.map((r) => (
-              <View key={r.id} className="w-[46%] bg-muted rounded-md overflow-hidden">
-                <Image
-                  source={r.image}
-                  className="w-full aspect-square"
-                  resizeMode="cover"
-                />
-                <View className="p-2">
-                  <Text size="xs" bold className="mb-1">{r.user}</Text>
-                  <View className="flex-row items-center gap-1 mb-1">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <FontAwesome
-                        key={i}
-                        name={i < r.rating ? "star" : "star-o"}
-                        size={12}
-                        color="#facc15"
-                      />
-                    ))}
-                  </View>
-                  <Text size="xs" numberOfLines={2} className="text-gray-600">{r.content}</Text>
-                </View>
-              </View>
-            ))}
-          </View>
-        )}
-  
-        {/* 📝 텍스트 리뷰 리스트 */}
-        <View className="space-y-6">
-          {textReviews.map((review) => (
-            <View key={review.id} className="border-b border-muted pb-4">
-              <View className="flex-row justify-between items-center mb-1">
-                <Text size="sm" bold>{review.user}</Text>
-                <View className="flex-row items-center space-x-1">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <FontAwesome
-                      key={i}
-                      name={i < review.rating ? "star" : "star-o"}
-                      size={14}
-                      color="#facc15"
-                    />
-                  ))}
-                  <Text size="xs" className="text-gray-500 ml-1">{review.rating}.0</Text>
-                </View>
-              </View>
-  
-              <Text size="sm" className="text-gray-800 leading-relaxed">
-                {review.content}
-              </Text>
-  
-              <Text size="xs" className="text-gray-400 mt-1">{review.createdAt}</Text>
-            </View>
-          ))}
-        </View>
-  
-        {/* 🔘 전체 보기 버튼 */}
-        <Pressable
-          className="border border-muted py-3 rounded-lg items-center mt-4"
-          onPress={() => console.log("전체 리뷰 보기")}
-        >
-          <Text size="sm" bold>리뷰 전체 보기</Text>
-        </Pressable>
+      <View className="mt-10 items-center justify-center py-8">
+        <ActivityIndicator size="large" />
       </View>
     );
   }
+
+  const reviewList = data?.items || [];
+  const imageReviews = reviewList.filter(
+    (r) => r.images && r.images.length > 0
+  );
+  const textReviews = reviewList.filter(
+    (r) => !r.images || r.images.length === 0
+  );
+
+  if (reviewList.length === 0) {
+    return (
+      <View className="mt-10">
+        <Text bold size="md" className="mb-2">
+          상품 리뷰
+        </Text>
+        <Text size="sm" className="text-gray-400">
+          아직 등록된 리뷰가 없습니다.
+        </Text>
+      </View>
+    );
+  }
+
+  return (
+    <View className="mt-10 space-y-8">
+      <Text bold size="md">
+        상품 리뷰 ({reviewList.length})
+      </Text>
+
+      {/* 📸 이미지 리뷰 카드 */}
+      {imageReviews.length > 0 && (
+        <View className="flex-row flex-wrap gap-3">
+          {imageReviews.map((r) => (
+            <View
+              key={r.id}
+              className="w-[46%] overflow-hidden rounded-md bg-gray-50"
+            >
+              <Image
+                source={{ uri: r.images[0] }}
+                className="h-40 w-full"
+                resizeMode="cover"
+              />
+              <View className="p-2">
+                <Text size="xs" bold className="mb-1">
+                  {r.user.firstName || "익명"}
+                </Text>
+                <View className="mb-1 flex-row items-center gap-1">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star
+                      key={i}
+                      size={12}
+                      fill={i < r.rating ? "#FCD34D" : "none"}
+                      color={i < r.rating ? "#FCD34D" : "#D1D5DB"}
+                    />
+                  ))}
+                </View>
+                <Text size="xs" numberOfLines={2} className="text-gray-600">
+                  {r.body}
+                </Text>
+              </View>
+            </View>
+          ))}
+        </View>
+      )}
+
+      {/* 📝 텍스트 리뷰 리스트 */}
+      <View className="space-y-6">
+        {textReviews.map((review) => (
+          <View key={review.id} className="border-b border-gray-200 pb-4">
+            <View className="mb-1 flex-row items-center justify-between">
+              <Text size="sm" bold>
+                {review.user.firstName || "익명"}
+              </Text>
+              <View className="flex-row items-center space-x-1">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Star
+                    key={i}
+                    size={14}
+                    fill={i < review.rating ? "#FCD34D" : "none"}
+                    color={i < review.rating ? "#FCD34D" : "#D1D5DB"}
+                  />
+                ))}
+                <Text size="xs" className="ml-1 text-gray-500">
+                  {review.rating}.0
+                </Text>
+              </View>
+            </View>
+
+            {review.title && (
+              <Text size="sm" bold className="mb-1">
+                {review.title}
+              </Text>
+            )}
+
+            <Text size="sm" className="leading-relaxed text-gray-800">
+              {review.body}
+            </Text>
+
+            <Text size="xs" className="mt-1 text-gray-400">
+              {new Date(review.createdAt).toLocaleDateString()}
+            </Text>
+          </View>
+        ))}
+      </View>
+
+      {/* 🔘 전체 보기 버튼 */}
+      {reviewList.length > 5 && (
+        <Pressable
+          className="mt-4 items-center rounded-lg border border-gray-300 py-3"
+          onPress={() => {
+            // Navigate to all reviews screen
+          }}
+        >
+          <Text size="sm" bold>
+            리뷰 전체 보기
+          </Text>
+        </Pressable>
+      )}
+    </View>
+  );
+}

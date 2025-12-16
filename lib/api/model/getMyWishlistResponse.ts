@@ -11,4 +11,6 @@ export interface GetMyWishlistResponse {
   items: WishlistItem[];
   /** @nullable */
   nextCursor: number | null;
+  /** @nullable */
+  nextCursorString: string | null;
 }

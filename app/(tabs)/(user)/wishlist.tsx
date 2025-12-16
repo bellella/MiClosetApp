@@ -10,7 +10,12 @@ import { useQuery } from "@tanstack/react-query";
 export default function WishlistScreen() {
   useAuthGuard();
 
-  const { data: wishlistData } = useWishlistIds();
+  const {
+    data: wishlistData,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useWishlistIds();
 
   const { data: products } = useQuery({
     queryKey: ["wishlist-products", wishlistData?.ids],
@@ -24,6 +29,16 @@ export default function WishlistScreen() {
     enabled: !!wishlistData?.ids && wishlistData.ids.length > 0,
   });
 
+  const handleLoadMore = () => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  };
+
+  const items = products
+    ? shopifyToProductCards(products, wishlistData?.idsMap)
+    : [];
+
   return (
     <AppContainer
       headerTitle="찜한 상품"
@@ -31,9 +46,18 @@ export default function WishlistScreen() {
       showHeaderCart={true}
     >
       <ProductListGrid
-        products={
-          products ? shopifyToProductCards(products, wishlistData?.idsMap) : []
-        }
+        products={[
+          ...items,
+          ...items,
+          ...items,
+          ...items,
+          ...items,
+          ...items,
+          ...items,
+          ...items,
+        ]}
+        onEndReached={handleLoadMore}
+        isLoadingMore={isFetchingNextPage}
       />
     </AppContainer>
   );

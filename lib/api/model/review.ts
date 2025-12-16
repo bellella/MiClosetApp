@@ -6,15 +6,20 @@
  * OpenAPI spec version: 1.0
  */
 import type { User } from './user';
+import type { ReviewHelpful } from './reviewHelpful';
 
 export interface Review {
   id: number;
   productId: string;
+  lineItemId: string;
   rating: number;
   title?: string;
   body: string;
+  images: string[];
+  helpfulCount: number;
   userId: number;
   user: User;
+  helpfulUsers: ReviewHelpful[];
   createdAt: string;
   updatedAt: string;
 }

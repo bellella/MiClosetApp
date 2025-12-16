@@ -1,5 +1,9 @@
 import { useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useInfiniteQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import {
   wishlistAdd,
   wishlistRemove,
@@ -14,17 +18,33 @@ type WishListData = {
   idsMap: WishListMap;
 };
 
+const QUERY_KEY = "wishlistIds";
+
 export function useWishlistIds() {
-  return useQuery<WishListData>({
-    queryKey: ["wishlist"],
-    queryFn: async () => {
-      const { items } = await wishlistGetMyWishList();
+  return useInfiniteQuery({
+    queryKey: [QUERY_KEY],
+    queryFn: async ({ pageParam }) => {
+      const response = await wishlistGetMyWishList({
+        cursor: pageParam,
+      });
+
       return {
-        ids: items.map((i) => i.productId),
-        idsMap: items.reduce((acc, item) => {
+        items: response.items,
+        nextCursor: response.nextCursor,
+      };
+    },
+    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+    initialPageParam: undefined as number | undefined,
+    select: (data) => {
+      // Flatten all pages and create ids/idsMap
+      const allItems = data.pages.flatMap((page) => page.items);
+      return {
+        ids: allItems.map((i) => i.productId),
+        idsMap: allItems.reduce((acc, item) => {
           acc[item.productId] = true;
           return acc;
         }, {} as WishListMap),
+        hasNextPage: data.pages[data.pages.length - 1]?.nextCursor != null,
       };
     },
   });
@@ -44,33 +64,42 @@ export function useWishlist(
       await wishlistAdd({ productId });
     },
     onMutate: async () => {
-      await queryClient.cancelQueries({ queryKey: ["wishlist"] });
-      const previousWishlist = queryClient.getQueryData<WishListData>([
-        "wishlist",
-      ]);
+      await queryClient.cancelQueries({ queryKey: [QUERY_KEY] });
+      const previousData = queryClient.getQueryData([QUERY_KEY]);
 
-      queryClient.setQueryData<WishListData>(["wishlist"], (old) => {
-        if (!old) return { ids: [productId], idsMap: { [productId]: true } };
+      // Update the first page with the new item
+      queryClient.setQueryData([QUERY_KEY], (old: any) => {
+        if (!old?.pages) {
+          return {
+            pages: [{ items: [{ productId }], nextCursor: null }],
+            pageParams: [undefined],
+          };
+        }
+
         return {
-          ids: [...old.ids, productId],
-          idsMap: { ...old.idsMap, [productId]: true },
+          ...old,
+          pages: old.pages.map((page: any, index: number) =>
+            index === 0
+              ? { ...page, items: [{ productId }, ...page.items] }
+              : page
+          ),
         };
       });
 
-      return { previousWishlist };
+      return { previousData };
     },
     onSuccess: () => {
       showSuccess("Added to wishlist");
     },
     onError: (error, _variables, context) => {
       setIsLiked(false);
-      if (context?.previousWishlist) {
-        queryClient.setQueryData(["wishlist"], context.previousWishlist);
+      if (context?.previousData) {
+        queryClient.setQueryData([QUERY_KEY], context.previousData);
       }
       showError(error, "Failed to add to wishlist");
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["wishlist"] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEY] });
     },
   });
 
@@ -80,36 +109,36 @@ export function useWishlist(
       await wishlistRemove({ productId });
     },
     onMutate: async () => {
-      await queryClient.cancelQueries({ queryKey: ["wishlist"] });
-      const previousWishlist = queryClient.getQueryData<WishListData>([
-        "wishlist",
-      ]);
+      await queryClient.cancelQueries({ queryKey: [QUERY_KEY] });
+      const previousData = queryClient.getQueryData([QUERY_KEY]);
 
-      queryClient.setQueryData<WishListData>(["wishlist"], (old) => {
-        if (!old) return { ids: [], idsMap: {} };
-        const newIds = old.ids.filter((id) => id !== productId);
-        const newIdsMap = { ...old.idsMap };
-        delete newIdsMap[productId];
+      // Remove the item from all pages
+      queryClient.setQueryData([QUERY_KEY], (old: any) => {
+        if (!old?.pages) return old;
+
         return {
-          ids: newIds,
-          idsMap: newIdsMap,
+          ...old,
+          pages: old.pages.map((page: any) => ({
+            ...page,
+            items: page.items.filter((item: any) => item.productId !== productId),
+          })),
         };
       });
 
-      return { previousWishlist };
+      return { previousData };
     },
     onSuccess: () => {
       showSuccess("Removed from wishlist");
     },
     onError: (error, _variables, context) => {
       setIsLiked(true);
-      if (context?.previousWishlist) {
-        queryClient.setQueryData(["wishlist"], context.previousWishlist);
+      if (context?.previousData) {
+        queryClient.setQueryData([QUERY_KEY], context.previousData);
       }
       showError(error, "Failed to remove from wishlist");
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["wishlist"] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEY] });
     },
   });
 

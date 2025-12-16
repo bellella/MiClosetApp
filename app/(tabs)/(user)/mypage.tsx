@@ -11,11 +11,11 @@ import { useShallow } from "zustand/react/shallow";
 
 const menuItems = [
   { label: "주문 배송", icon: "truck", count: undefined, url: "/orders" },
-  { label: "리뷰", icon: "comment-o", count: 0 },
-  { label: "쿠폰", icon: "ticket", count: 6 },
-  { label: "포인트", icon: "circle-o", count: 0 },
-  { label: "마일리지", icon: "circle", count: undefined },
-  { label: "공유 리워드", icon: "won", count: undefined },
+  { label: "리뷰", icon: "comment-o", count: 0, url: "/reviews" },
+  // { label: "쿠폰", icon: "ticket", count: 6 },
+  // { label: "포인트", icon: "circle-o", count: 0 },
+  // { label: "마일리지", icon: "circle", count: undefined },
+  // { label: "공유 리워드", icon: "won", count: undefined },
 ];
 
 export default function MyPage() {

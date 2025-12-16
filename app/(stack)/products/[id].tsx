@@ -67,7 +67,7 @@ export default function ProductDetailScreen() {
             />
           </View>
 
-          <ProductDetailReview />
+          <ProductDetailReview productId={id as string} />
           {/* <ProductListSlider title="Recommended" products={dummyProducts} /> */}
         </View>
       </AppContainer>

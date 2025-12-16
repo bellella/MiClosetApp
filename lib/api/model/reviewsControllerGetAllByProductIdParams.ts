@@ -14,5 +14,9 @@ cursor?: number | null;
 /**
  * @nullable
  */
+cursorString?: string | null;
+/**
+ * @nullable
+ */
 limit?: number | null;
 };

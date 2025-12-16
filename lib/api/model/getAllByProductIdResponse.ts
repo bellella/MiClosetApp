@@ -5,10 +5,10 @@
  * The API description
  * OpenAPI spec version: 1.0
  */
-import type { ReviewWithoutUser } from './reviewWithoutUser';
+import type { Review } from './review';
 
-export interface GetMyReviewsResponse {
-  items: ReviewWithoutUser[];
+export interface GetAllByProductIdResponse {
+  items: Review[];
   /** @nullable */
   nextCursor: number | null;
   /** @nullable */

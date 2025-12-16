@@ -9,4 +9,4 @@
 /**
  * @nullable
  */
-export type GetMyReviewsResponseNextCursor = string | number | null;
+export type GetCustomerOrdersResponseNextCursor = string | number | null;

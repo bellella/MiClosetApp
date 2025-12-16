@@ -6,9 +6,10 @@
  * OpenAPI spec version: 1.0
  */
 import type {
+  GetCustomerOrdersResponse,
+  ShopifyControllerGetCustomerOrdersParams,
   ShopifyCustomer,
-  ShopifyOrder,
-  UpdateCustomerDto
+  ShopifyOrder
 } from '../../model';
 
 import { customInstance } from '../../axios-client';
@@ -26,23 +27,22 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
       options);
     }
   export const shopifyGetCustomerOrders = (
-    
- options?: SecondParameter<typeof customInstance<ShopifyOrder[]>>,) => {
-      return customInstance<ShopifyOrder[]>(
-      {url: `/api/shopify/customer/orders`, method: 'GET'
+    params?: ShopifyControllerGetCustomerOrdersParams,
+ options?: SecondParameter<typeof customInstance<GetCustomerOrdersResponse>>,) => {
+      return customInstance<GetCustomerOrdersResponse>(
+      {url: `/api/shopify/customer/orders`, method: 'GET',
+        params
     },
       options);
     }
-  export const shopifyUpdateCustomer = (
-    updateCustomerDto: UpdateCustomerDto,
- options?: SecondParameter<typeof customInstance<ShopifyCustomer>>,) => {
-      return customInstance<ShopifyCustomer>(
-      {url: `/api/shopify/customer/update`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: updateCustomerDto
+  export const shopifyGetOrderById = (
+    orderId: string,
+ options?: SecondParameter<typeof customInstance<ShopifyOrder>>,) => {
+      return customInstance<ShopifyOrder>(
+      {url: `/api/shopify/customer/orders/${orderId}`, method: 'GET'
     },
       options);
     }
   export type ShopifyGetCustomerResult = NonNullable<Awaited<ReturnType<typeof shopifyGetCustomer>>>
 export type ShopifyGetCustomerOrdersResult = NonNullable<Awaited<ReturnType<typeof shopifyGetCustomerOrders>>>
-export type ShopifyUpdateCustomerResult = NonNullable<Awaited<ReturnType<typeof shopifyUpdateCustomer>>>
+export type ShopifyGetOrderByIdResult = NonNullable<Awaited<ReturnType<typeof shopifyGetOrderById>>>

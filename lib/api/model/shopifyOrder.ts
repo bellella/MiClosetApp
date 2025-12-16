@@ -5,5 +5,20 @@
  * The API description
  * OpenAPI spec version: 1.0
  */
+import type { ShopifyOrderClosedAt } from './shopifyOrderClosedAt';
+import type { ShopifyOrderCustomer } from './shopifyOrderCustomer';
+import type { ShopifyOrderTotalPrice } from './shopifyOrderTotalPrice';
+import type { ShopifyOrderLineItems } from './shopifyOrderLineItems';
 
-export interface ShopifyOrder { [key: string]: unknown }
+export interface ShopifyOrder {
+  id: string;
+  orderNumber: number;
+  processedAt: string;
+  closedAt: ShopifyOrderClosedAt;
+  financialStatus: string;
+  fulfillmentStatus: string;
+  customer: ShopifyOrderCustomer;
+  totalPrice: ShopifyOrderTotalPrice;
+  lineItems: ShopifyOrderLineItems;
+  hasReviewableItems: boolean;
+}

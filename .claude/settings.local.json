@@ -3,7 +3,9 @@
     "allow": [
       "mcp__ide__getDiagnostics",
       "Bash(npx tsc:*)",
-      "Bash(yarn add:*)"
+      "Bash(yarn add:*)",
+      "Bash(npm install:*)",
+      "Bash(npx expo install:*)"
     ],
     "deny": [],
     "ask": []

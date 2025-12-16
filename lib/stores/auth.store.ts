@@ -23,13 +23,16 @@ export const useAuthStore = create<AuthState>((set) => ({
   isRestoring: true,
   isLoggedIn: false,
   restoreUser: async () => {
-    const customer = await shopifyGetCustomer();
-
-    if (customer) {
-      set({ user: customer, isLoggedIn: true });
+    try {
+      const customer = await shopifyGetCustomer();
+      if (customer) {
+        set({ user: customer, isLoggedIn: true });
+      }
+    } catch (error) {
+      set({ user: null, isLoggedIn: false });
+    } finally {
+      set({ isRestoring: false });
     }
-
-    set({ isRestoring: false });
   },
   login: async (user: ShopifyCustomer) => {
     set({ user, isLoggedIn: true });

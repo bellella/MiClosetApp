@@ -6,7 +6,7 @@ import { Pressable } from "@/components/ui/pressable";
 import { Heart } from "lucide-react-native";
 import { DimensionValue } from "react-native";
 import { Image } from "@/components/ui/image";
-import { CollectionProduct, ProductItem } from "@/types";
+import { ProductItem } from "@/types";
 import { useWishlist } from "@/lib/hooks/useWishlist";
 
 export type ProductCardBaseProps = {

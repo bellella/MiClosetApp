@@ -5,14 +5,19 @@
  * The API description
  * OpenAPI spec version: 1.0
  */
+import type { ReviewHelpful } from './reviewHelpful';
 
 export interface UpdateReviewResponse {
   id: number;
   productId: string;
+  lineItemId: string;
   rating: number;
   title?: string;
   body: string;
+  images: string[];
+  helpfulCount: number;
   userId: number;
+  helpfulUsers: ReviewHelpful[];
   createdAt: string;
   updatedAt: string;
 }

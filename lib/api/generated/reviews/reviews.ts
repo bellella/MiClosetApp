@@ -8,10 +8,12 @@
 import type {
   CreateReviewDto,
   DeleteResultDto,
+  GetAllByProductIdResponse,
   GetMyReviewsResponse,
-  Review,
+  GetReviewableItemsResponse,
   ReviewsControllerGetAllByProductIdParams,
   ReviewsControllerGetAllByUserIdParams,
+  ReviewsControllerGetReviewableItemsParams,
   UpdateReviewDto,
   UpdateReviewResponse
 } from '../../model';
@@ -41,11 +43,20 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
     },
       options);
     }
+  export const reviewsGetReviewableItems = (
+    params: ReviewsControllerGetReviewableItemsParams,
+ options?: SecondParameter<typeof customInstance<GetReviewableItemsResponse>>,) => {
+      return customInstance<GetReviewableItemsResponse>(
+      {url: `/api/reviews/reviewable`, method: 'GET',
+        params
+    },
+      options);
+    }
   export const reviewsGetAllByProductId = (
     productId: string,
     params?: ReviewsControllerGetAllByProductIdParams,
- options?: SecondParameter<typeof customInstance<Review[]>>,) => {
-      return customInstance<Review[]>(
+ options?: SecondParameter<typeof customInstance<GetAllByProductIdResponse>>,) => {
+      return customInstance<GetAllByProductIdResponse>(
       {url: `/api/reviews/product/${productId}`, method: 'GET',
         params
     },
@@ -70,8 +81,27 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
     },
       options);
     }
+  export const reviewsMarkAsHelpful = (
+    id: number,
+ options?: SecondParameter<typeof customInstance<void>>,) => {
+      return customInstance<void>(
+      {url: `/api/reviews/${id}/helpful`, method: 'POST'
+    },
+      options);
+    }
+  export const reviewsRemoveHelpful = (
+    id: number,
+ options?: SecondParameter<typeof customInstance<void>>,) => {
+      return customInstance<void>(
+      {url: `/api/reviews/${id}/helpful`, method: 'DELETE'
+    },
+      options);
+    }
   export type ReviewsCreateResult = NonNullable<Awaited<ReturnType<typeof reviewsCreate>>>
 export type ReviewsGetAllByUserIdResult = NonNullable<Awaited<ReturnType<typeof reviewsGetAllByUserId>>>
+export type ReviewsGetReviewableItemsResult = NonNullable<Awaited<ReturnType<typeof reviewsGetReviewableItems>>>
 export type ReviewsGetAllByProductIdResult = NonNullable<Awaited<ReturnType<typeof reviewsGetAllByProductId>>>
 export type ReviewsUpdateReviewResult = NonNullable<Awaited<ReturnType<typeof reviewsUpdateReview>>>
 export type ReviewsRemoveResult = NonNullable<Awaited<ReturnType<typeof reviewsRemove>>>
+export type ReviewsMarkAsHelpfulResult = NonNullable<Awaited<ReturnType<typeof reviewsMarkAsHelpful>>>
+export type ReviewsRemoveHelpfulResult = NonNullable<Awaited<ReturnType<typeof reviewsRemoveHelpful>>>

@@ -6,7 +6,7 @@ import { getSdk as getCustomersSdk } from "./customers/customers.graphql";
 import { getSdk as getAuthSdk } from "./auth/auth.graphql";
 import { getSdk as getCategoriesSdk } from "./categories/categories.graphql";
 
-const gqlClient = new GraphQLClient("http://172.30.1.66:4000/shopify");
+const gqlClient = new GraphQLClient("http://localhost:4000/shopify");
 
 // const client = createStorefrontApiClient({
 //   storeDomain: 'https://miicloset.myshopify.com',

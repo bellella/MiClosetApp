@@ -38,14 +38,5 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
     },
       options);
     }
-  export const authRefreshShopifyToken = (
-    
- options?: SecondParameter<typeof customInstance<void>>,) => {
-      return customInstance<void>(
-      {url: `/api/auth/shopify/refresh`, method: 'POST'
-    },
-      options);
-    }
   export type AuthGoogleTokenLoginResult = NonNullable<Awaited<ReturnType<typeof authGoogleTokenLogin>>>
 export type AuthFirebaseLoginResult = NonNullable<Awaited<ReturnType<typeof authFirebaseLogin>>>
-export type AuthRefreshShopifyTokenResult = NonNullable<Awaited<ReturnType<typeof authRefreshShopifyToken>>>

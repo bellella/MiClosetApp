@@ -17,9 +17,6 @@ export interface User {
   email: string;
   firstName?: string;
   lastName?: string;
-  shopifyAccessToken?: string;
-  shopifyAccessTokenExpiresAt?: string;
-  shopifyPasswordHash?: string;
   cart?: Cart;
   reviews: Review[];
   wishlistItems: WishlistItem[];

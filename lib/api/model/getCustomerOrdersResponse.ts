@@ -5,10 +5,10 @@
  * The API description
  * OpenAPI spec version: 1.0
  */
-import type { ReviewWithoutUser } from './reviewWithoutUser';
+import type { ShopifyOrder } from './shopifyOrder';
 
-export interface GetMyReviewsResponse {
-  items: ReviewWithoutUser[];
+export interface GetCustomerOrdersResponse {
+  items: ShopifyOrder[];
   /** @nullable */
   nextCursor: number | null;
   /** @nullable */

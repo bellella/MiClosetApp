@@ -6,7 +6,4 @@
  * OpenAPI spec version: 1.0
  */
 
-/**
- * @nullable
- */
-export type GetMyReviewsResponseNextCursor = string | number | null;
+export type ShopifyOrderCustomer = { [key: string]: unknown };
