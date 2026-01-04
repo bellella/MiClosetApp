@@ -10,7 +10,7 @@ import React from "react";
 import { FloatingButton } from "@/components/common/FloatingButton";
 import { QuantitySelector } from "@/components/common/QuantitySelector";
 import useCart from "./useCart";
-import { PageLoading } from "@/components/common/PageLoading";
+import { PageLoading } from "@/components/common/loading/PageLoading";
 import { CheckoutWaitingAlert } from "@/components/common/CheckoutWaitingAlert";
 import { useCheckout } from "@/lib/hooks/useCheckout";
 

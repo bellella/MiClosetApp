@@ -12,6 +12,7 @@ export default function HomeScreen() {
         <HomeBanner />
         <CategoryIconList />
         <HomeCollections />
+        {/* @todo RecommendedItems /> */}
       </Box>
     </AppContainer>
   );

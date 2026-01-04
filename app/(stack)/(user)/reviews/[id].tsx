@@ -6,10 +6,12 @@ import { HStack } from "@/components/ui/hstack";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { reviewsGetAllByUserId, reviewsRemove } from "@/lib/api/generated/reviews/reviews";
-import { ActivityIndicator, Image, ScrollView, Alert } from "react-native";
+import { Image, ScrollView, Alert } from "react-native";
+import { Spinner } from "@/components/ui/spinner";
 import { Star } from "lucide-react-native";
 import { Pressable } from "@/components/ui/pressable";
 import { ReviewProductInfo } from "@/components/reviews/ReviewProductInfo";
+import { formatLocalDate } from "@/lib/utils/date.utils";
 
 export default function ReviewDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -54,7 +56,7 @@ export default function ReviewDetailScreen() {
     return (
       <AppContainer headerTitle="Review Detail" showBackButton>
         <Box className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" />
+          <Spinner size="large" />
         </Box>
       </AppContainer>
     );
@@ -111,7 +113,7 @@ export default function ReviewDetailScreen() {
 
           {/* Date */}
           <Text size="xs" className="text-gray-400">
-            {new Date(review.createdAt).toLocaleDateString()}
+            {formatLocalDate(review.createdAt)}
           </Text>
 
           {/* Actions */}

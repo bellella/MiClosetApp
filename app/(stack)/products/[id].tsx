@@ -9,7 +9,7 @@ import RenderHtml from "react-native-render-html";
 import { shopifySdk } from "@/lib/graphql/client";
 import { useQuery } from "@tanstack/react-query";
 import { ProductBuyButtonContainer } from "@/components/products/product-buy-button-container";
-import { PageLoading } from "@/components/common/PageLoading";
+import { PageLoading } from "@/components/common/loading/PageLoading";
 
 export default function ProductDetailScreen() {
   const { id } = useLocalSearchParams();

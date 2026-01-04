@@ -29,8 +29,29 @@ export function AppContainer({
   disableScroll = false,
   children,
 }: AppContainerProps) {
+  if (disableScroll) {
+    return (
+      <View className="flex-1">
+        <AppHeader
+          title={headerTitle}
+          left={headerLeft}
+          right={headerRight}
+          showBackButton={showBackButton}
+          showLogo={showHeaderLogo}
+          showCart={showHeaderCart}
+          showSearch={showHeaderSearch}
+        />
+        <Box className="w-screen flex-1 items-center">
+          <View className="w-full max-w-[600px] flex-1 self-center bg-white">
+            {children}
+          </View>
+        </Box>
+      </View>
+    );
+  }
+
   return (
-    <View className="flex-1">
+    <CustomScrollView stickyHeaderIndices={[0]} scrollVisible="always">
       <AppHeader
         title={headerTitle}
         left={headerLeft}
@@ -40,18 +61,11 @@ export function AppContainer({
         showCart={showHeaderCart}
         showSearch={showHeaderSearch}
       />
-      <Box className="w-screen flex-1 items-center">
-        {disableScroll ? (
-          <View className="w-full max-w-[600px] flex-1">{children}</View>
-        ) : (
-          <CustomScrollView
-            className="flex w-full max-w-[600px] flex-1"
-            scrollVisible="always"
-          >
-            {children}
-          </CustomScrollView>
-        )}
+      <Box className="min-h-[calc(100vh-100px)] w-screen items-center">
+        <View className="min-h-full w-full max-w-[600px] self-center bg-white">
+          {children}
+        </View>
       </Box>
-    </View>
+    </CustomScrollView>
   );
 }

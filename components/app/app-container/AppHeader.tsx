@@ -1,11 +1,12 @@
 import { Image } from "react-native";
 import { Pressable } from "@/components/ui/pressable";
 import { Text } from "@/components/ui/text";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { Link } from "expo-router";
 import { View } from "react-native";
 import { Box } from "@/components/ui/box";
+import { Colors } from "@/constants/Colors";
 type AppHeaderProps = {
   title?: string;
   left?: React.ReactNode;
@@ -29,12 +30,16 @@ export function AppHeader({
 
   return (
     <View className="w-screen items-center">
-      <View className="bg-white h-[50px] max-w-app self-center w-full flex-row justify-between items-center px-4 py-3 z-50">
+      <View className="z-50 h-[50px] w-full max-w-app flex-row items-center justify-between self-center px-4 py-3">
         <View>
           {left}
           {showBackButton && (
             <Pressable onPress={() => navigation.goBack()}>
-              <FontAwesome name="chevron-left" size={20} />
+              <Ionicons
+                name="chevron-back"
+                size={20}
+                color={Colors.light.icon}
+              />
             </Pressable>
           )}
           <View />
@@ -58,21 +63,21 @@ export function AppHeader({
         </View>
         <View>
           {title && (
-            <Text size="lg" bold className="text-center flex-1">
+            <Text size="lg" bold className="flex-1 text-center">
               {title}
             </Text>
           )}
         </View>
-        <View className="justify-self-end flex-row items-center gap-4">
+        <View className="flex-row items-center gap-4 justify-self-end">
           {right}
           {showSearch && (
             <Link href="/search">
-              <FontAwesome name="search" size={20} />
+              <Ionicons name="search" size={20} color={Colors.light.icon} />
             </Link>
           )}
           {showCart && (
             <Link href="/cart">
-              <FontAwesome name="shopping-cart" size={20} />
+              <Ionicons name="cart" size={20} color={Colors.light.icon} />
             </Link>
           )}
         </View>

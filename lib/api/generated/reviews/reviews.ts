@@ -26,11 +26,22 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
   export const reviewsCreate = (
     createReviewDto: CreateReviewDto,
- options?: SecondParameter<typeof customInstance<number>>,) => {
+ options?: SecondParameter<typeof customInstance<number>>,) => {const formData = new FormData();
+formData.append(`productId`, createReviewDto.productId)
+formData.append(`lineItemId`, createReviewDto.lineItemId)
+formData.append(`rating`, createReviewDto.rating.toString())
+formData.append(`body`, createReviewDto.body)
+if(createReviewDto.title !== undefined) {
+ formData.append(`title`, createReviewDto.title)
+ }
+if(createReviewDto.images !== undefined) {
+ createReviewDto.images.forEach(value => formData.append(`images`, value));
+ }
+
       return customInstance<number>(
       {url: `/api/reviews`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: createReviewDto
+      headers: {'Content-Type': 'multipart/form-data', },
+       data: formData
     },
       options);
     }

@@ -1,6 +1,7 @@
 import React from "react";
-import { Image, TouchableOpacity, View, ActivityIndicator } from "react-native";
+import { Image, TouchableOpacity, View } from "react-native";
 import { Text } from "@/components/ui/text";
+import { Spinner } from "@/components/ui/spinner";
 import { Link } from "expo-router";
 import { useCategories } from "@/lib/hooks/useCategories";
 import { CustomScrollView } from "@/components/common/CustomScrollView";
@@ -13,7 +14,7 @@ export function CategoryIconList() {
       <View
         style={{ height: 100, justifyContent: "center", alignItems: "center" }}
       >
-        <ActivityIndicator size="small" />
+        <Spinner size="small" />
       </View>
     );
   }

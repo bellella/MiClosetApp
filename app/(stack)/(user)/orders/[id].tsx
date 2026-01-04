@@ -6,9 +6,11 @@ import { HStack } from "@/components/ui/hstack";
 import { shopifyGetOrderById } from "@/lib/api/generated/shopify/shopify";
 import { useQuery } from "@tanstack/react-query";
 import { useLocalSearchParams } from "expo-router";
-import { ActivityIndicator, ScrollView } from "react-native";
+import { ScrollView } from "react-native";
+import { Spinner } from "@/components/ui/spinner";
 import { Image } from "@/components/ui/image";
 import { Order } from "@/lib/graphql/shopify.schema";
+import { formatDate } from "@/lib/utils/date.utils";
 
 export default function OrderDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -25,18 +27,11 @@ export default function OrderDetailScreen() {
     return (
       <AppContainer headerTitle="주문상세" showBackButton>
         <Box className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" />
+          <Spinner size="large" />
         </Box>
       </AppContainer>
     );
   }
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return `${date.getFullYear().toString().slice(2)}.${String(
-      date.getMonth() + 1
-    ).padStart(2, "0")}.${String(date.getDate()).padStart(2, "0")}`;
-  };
 
   return (
     <AppContainer headerTitle="주문상세" showBackButton>

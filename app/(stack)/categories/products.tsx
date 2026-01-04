@@ -7,7 +7,8 @@ import { useWishlistIds } from "@/lib/hooks/useWishlist";
 import { shopifyToProductCards } from "@/lib/utils/product.utils";
 import { useQuery } from "@tanstack/react-query";
 import { useLocalSearchParams } from "expo-router";
-import { ActivityIndicator, View, Text } from "react-native";
+import { View, Text } from "react-native";
+import { Spinner } from "@/components/ui/spinner";
 
 export default function Categories() {
   const { categoryId, subCategoryId } = useLocalSearchParams<{
@@ -45,7 +46,7 @@ export default function Categories() {
 
       {isLoading && (
         <View style={{ paddingTop: 40, alignItems: "center" }}>
-          <ActivityIndicator size="large" color="#000" />
+          <Spinner size="large" color="#000" />
         </View>
       )}
 

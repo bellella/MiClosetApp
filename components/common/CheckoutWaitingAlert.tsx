@@ -1,5 +1,4 @@
 import React from "react";
-import { ActivityIndicator } from "react-native";
 import {
   Modal,
   ModalBackdrop,
@@ -8,6 +7,7 @@ import {
 } from "@/components/ui/modal";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
+import { Spinner } from "@/components/ui/spinner";
 
 type CheckoutWaitingAlertProps = {
   isOpen: boolean;
@@ -26,7 +26,7 @@ export function CheckoutWaitingAlert({ isOpen }: CheckoutWaitingAlertProps) {
       <ModalContent className="p-8">
         <ModalBody>
           <VStack className="space-y-4 items-center">
-            <ActivityIndicator size="large" color="purple" />
+            <Spinner size="large" color="purple" />
             <VStack className="space-y-2 items-center">
               <Text bold size="lg">
                 Checkout in Progress

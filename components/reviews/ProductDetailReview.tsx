@@ -1,10 +1,12 @@
-import { Pressable, View, ActivityIndicator } from "react-native";
+import { Pressable, View } from "react-native";
 import { Text } from "@/components/ui/text";
 import { Image } from "@/components/ui/image";
+import { Spinner } from "@/components/ui/spinner";
 import { Star } from "lucide-react-native";
 import { useQuery } from "@tanstack/react-query";
 import { reviewsGetAllByProductId } from "@/lib/api/generated/reviews/reviews";
 import { useRouter } from "expo-router";
+import { formatLocalDate } from "@/lib/utils/date.utils";
 
 type Props = {
   productId: string;
@@ -23,7 +25,7 @@ export function ProductDetailReview({ productId }: Props) {
   if (isLoading) {
     return (
       <View className="mt-10 items-center justify-center py-8">
-        <ActivityIndicator size="large" />
+        <Spinner size="large" />
       </View>
     );
   }
@@ -125,7 +127,7 @@ export function ProductDetailReview({ productId }: Props) {
             </Text>
 
             <Text size="xs" className="mt-1 text-gray-400">
-              {new Date(review.createdAt).toLocaleDateString()}
+              {formatLocalDate(review.createdAt)}
             </Text>
           </View>
         ))}

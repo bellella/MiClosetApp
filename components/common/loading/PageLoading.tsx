@@ -1,5 +1,6 @@
 import React from "react";
-import { View, ActivityIndicator } from "react-native";
+import { View } from "react-native";
+import { Spinner } from "@/components/ui/spinner";
 
 /**
  * Full-screen loading overlay component
@@ -9,7 +10,7 @@ import { View, ActivityIndicator } from "react-native";
 export function PageLoading() {
   return (
     <View className="absolute h-full w-full bg-white/70 justify-center items-center z-50">
-      <ActivityIndicator size="large" color="purple" />
+      <Spinner size="large" color="purple" />
     </View>
   );
 }

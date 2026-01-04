@@ -1,26 +1,26 @@
 import { cn } from "@gluestack-ui/utils/nativewind-utils";
 import React from "react";
-import { FlatList, Platform } from "react-native";
+import { FlatList, FlatListProps } from "react-native";
 
-type Props = React.ComponentProps<typeof FlatList> & {
+type Props<T> = FlatListProps<T> & {
   className?: string;
   style?: any;
   scrollVisible?: "hover" | "always";
   scrollThumbColor?: string;
 };
 
-export function CustomFlatList({
+export function CustomFlatList<T>({
   className = "",
   style,
   scrollVisible = "hover",
   scrollThumbColor,
   ...rest
-}: Props) {
+}: Props<T>) {
   const scrollClass =
     scrollVisible === "hover" ? "scroll-hover" : "scroll-always";
 
   return (
-    <FlatList
+    <FlatList<T>
       className={cn("custom-scroll", scrollClass, className)}
       style={{
         ...(scrollThumbColor && {

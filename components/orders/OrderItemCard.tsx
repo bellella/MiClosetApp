@@ -9,27 +9,29 @@ import { ShopifyOrder } from "@/lib/api/model";
 import { Order } from "@/lib/graphql/shopify.schema";
 import { useRouter } from "expo-router";
 import { Pressable } from "@/components/ui/pressable";
+import { Button, ButtonText } from "../ui/button";
+import { Card } from "../ui/card";
+import { formatDate, formatLocalDate } from "@/lib/utils/date.utils";
 
 export const OrderItemCard = ({ order }: { order: Order | ShopifyOrder }) => {
   const router = useRouter();
   const price = parseFloat(order.totalPrice?.amount || "0").toLocaleString();
   const allItems = (order.lineItems as any)?.edges || [];
-  const hasReviewableItems = 'hasReviewableItems' in order ? order.hasReviewableItems : false;
+  const hasReviewableItems =
+    "hasReviewableItems" in order ? order.hasReviewableItems : false;
 
   return (
-    <Box className="mb-4 rounded-xl border border-gray-100 bg-white p-4 shadow-sm">
+    <Card>
       <HStack className="mb-2 justify-between">
-        <Text bold>{order.processedAt}</Text>
+        <Text bold>{formatLocalDate(order.processedAt)}</Text>
         <OrderStatusBadge status={order.fulfillmentStatus} />
       </HStack>
-
-      {/* Render all items */}
       {allItems.map((edge: any, index: number) => {
         const item = edge.node;
         return (
-          <HStack key={item.id || index} className="space-x-3 mb-3">
+          <HStack key={item.id || index} className="mb-3 space-x-3">
             <Image
-              source={{ uri: item?.variant?.image?.url }}
+              source={{ uri: item?.image?.url }}
               className="h-24 w-20 rounded-md bg-gray-100"
             />
             <VStack className="flex-1">
@@ -37,10 +39,13 @@ export const OrderItemCard = ({ order }: { order: Order | ShopifyOrder }) => {
                 {item?.title}
               </Text>
               <Text size="sm" className="mt-1 text-gray-500">
-                {item?.variant?.title} | {item?.quantity}개
+                {item?.variant?.title} | {item?.quantity} pcs
               </Text>
               <Text bold className="mt-2">
-                {parseFloat(item?.originalTotalPrice?.amount || "0").toLocaleString()}원
+                ₩
+                {parseFloat(
+                  item?.originalTotalPrice?.amount || "0"
+                ).toLocaleString()}
               </Text>
             </VStack>
           </HStack>
@@ -48,31 +53,36 @@ export const OrderItemCard = ({ order }: { order: Order | ShopifyOrder }) => {
       })}
 
       <Text bold className="mt-2 text-right">
-        총 {price}원
+        Total ₩{price}
       </Text>
 
       <HStack className="mt-3 gap-x-2">
-        <Pressable
+        {/* <Pressable
           className="flex-1 items-center rounded-lg border border-gray-300 py-2"
           onPress={() => {}}
         >
-          <Text size="sm">배송조회</Text>
+          <Text size="sm">Track Delivery</Text>
         </Pressable>
         <Pressable
           className="flex-1 items-center rounded-lg border border-gray-300 py-2"
-          onPress={() => router.push(`/(stack)/(user)/orders/${encodeURIComponent(order.id)}`)}
+          onPress={() =>
+            router.push(
+              `/(stack)/(user)/orders/${encodeURIComponent(order.id)}`
+            )
+          }
         >
-          <Text size="sm">주문상세</Text>
-        </Pressable>
+          <Text size="sm">Order Details</Text>
+        </Pressable> */}
         {hasReviewableItems && (
-          <Pressable
-            className="flex-1 items-center rounded-lg bg-pink-500 py-2"
+          <Button
+            action="primary"
+            className="flex-1 items-center rounded-lg"
             onPress={() => router.push("/(stack)/(user)/reviews")}
           >
-            <Text size="sm" className="text-white">리뷰 쓰기</Text>
-          </Pressable>
+            <ButtonText size="sm">Write Review</ButtonText>
+          </Button>
         )}
       </HStack>
-    </Box>
+    </Card>
   );
 };

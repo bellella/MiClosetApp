@@ -1,12 +1,12 @@
 import React, { useCallback } from "react";
-import { ActivityIndicator, FlatList, RefreshControl } from "react-native";
+import { FlatList, RefreshControl } from "react-native";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { Box } from "@/components/ui/box";
 import { Text } from "@/components/ui/text";
 import { AppContainer } from "@/components/app/app-container";
 import { OrderItemCard } from "@/components/orders/OrderItemCard";
 import { View } from "@/components/Themed";
 import { OrderListSkeleton } from "@/components/skeletons/OrderListSkeleton";
+import { ListLoading } from "@/components/common/loading/ListLoading";
 import { shopifyGetCustomerOrders } from "@/lib/api/generated/shopify/shopify";
 
 export default function OrdersScreen() {
@@ -41,14 +41,14 @@ export default function OrdersScreen() {
 
   if (isLoading) {
     return (
-      <AppContainer headerTitle="주문·배송" showBackButton>
+      <AppContainer headerTitle="Orders & Delivery" showBackButton>
         <OrderListSkeleton />
       </AppContainer>
     );
   }
 
   return (
-    <AppContainer headerTitle="주문·배송" showBackButton>
+    <AppContainer headerTitle="Orders & Delivery" showBackButton disableScroll>
       <FlatList
         data={data}
         keyExtractor={(item) => item.id}
@@ -65,11 +65,7 @@ export default function OrdersScreen() {
           </View>
         }
         ListFooterComponent={
-          isFetchingNextPage ? (
-            <Box className="items-center justify-center py-4">
-              <ActivityIndicator size="large" />
-            </Box>
-          ) : null
+          <ListLoading isLoading={isFetchingNextPage} />
         }
       />
     </AppContainer>

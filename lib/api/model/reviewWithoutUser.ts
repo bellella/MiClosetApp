@@ -20,4 +20,5 @@ export interface ReviewWithoutUser {
   helpfulUsers: ReviewHelpful[];
   createdAt: string;
   updatedAt: string;
+  productImageUrl: string;
 }

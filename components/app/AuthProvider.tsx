@@ -1,6 +1,7 @@
 // src/components/RestoreUserGate.tsx
 import { useEffect } from "react";
-import { View, ActivityIndicator } from "react-native";
+import { View } from "react-native";
+import { Spinner } from "@/components/ui/spinner";
 import { useAuthStore } from "@/lib/stores/auth.store";
 import * as WebBrowser from "expo-web-browser";
 
@@ -18,7 +19,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   if (isRestoring) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" />
+        <Spinner size="large" />
       </View>
     );
   }

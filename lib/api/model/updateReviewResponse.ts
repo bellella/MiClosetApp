@@ -20,4 +20,5 @@ export interface UpdateReviewResponse {
   helpfulUsers: ReviewHelpful[];
   createdAt: string;
   updatedAt: string;
+  productImageUrl: string;
 }

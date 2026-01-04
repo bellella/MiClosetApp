@@ -3,8 +3,8 @@ import { Text } from "@/components/ui/text";
 import { HStack } from "@/components/ui/hstack";
 import { VStack } from "@/components/ui/vstack";
 import { Image } from "@/components/ui/image";
+import { Spinner } from "@/components/ui/spinner";
 import { useQuery } from "@tanstack/react-query";
-import { ActivityIndicator } from "react-native";
 import { shopifySdk } from "@/lib/graphql/client";
 
 interface ReviewProductInfoProps {
@@ -21,7 +21,7 @@ export const ReviewProductInfo = ({ productId }: ReviewProductInfoProps) => {
   if (isLoading) {
     return (
       <Box className="border-b border-gray-200 p-4">
-        <ActivityIndicator size="small" />
+        <Spinner size="small" />
       </Box>
     );
   }
@@ -34,9 +34,9 @@ export const ReviewProductInfo = ({ productId }: ReviewProductInfoProps) => {
   return (
     <Box className="border-b border-gray-200 bg-gray-50 p-4">
       <HStack className="gap-x-3">
-        {product.image && (
+        {product.images && (
           <Image
-            source={{ uri: product.image }}
+            source={{ uri: product.images.nodes[0].url }}
             className="h-16 w-16 rounded-lg"
           />
         )}

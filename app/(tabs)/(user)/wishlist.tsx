@@ -6,6 +6,7 @@ import { useAuthGuard } from "@/lib/hooks/useAuthGuard";
 import { useWishlistIds } from "@/lib/hooks/useWishlist";
 import { shopifyToProductCards } from "@/lib/utils/product.utils";
 import { useQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
 
 export default function WishlistScreen() {
   useAuthGuard();
@@ -27,6 +28,8 @@ export default function WishlistScreen() {
       return nodes as Product[];
     },
     enabled: !!wishlistData?.ids && wishlistData.ids.length > 0,
+    staleTime: 5 * 60 * 1000,
+    placeholderData: (previousData) => previousData,
   });
 
   const handleLoadMore = () => {
@@ -35,27 +38,21 @@ export default function WishlistScreen() {
     }
   };
 
-  const items = products
-    ? shopifyToProductCards(products, wishlistData?.idsMap)
-    : [];
+  const items = useMemo(() => {
+    return products
+      ? shopifyToProductCards(products, wishlistData?.idsMap)
+      : [];
+  }, [products, wishlistData?.idsMap]);
 
   return (
     <AppContainer
       headerTitle="찜한 상품"
       showHeaderLogo={true}
       showHeaderCart={true}
+      disableScroll={true}
     >
       <ProductListGrid
-        products={[
-          ...items,
-          ...items,
-          ...items,
-          ...items,
-          ...items,
-          ...items,
-          ...items,
-          ...items,
-        ]}
+        products={items}
         onEndReached={handleLoadMore}
         isLoadingMore={isFetchingNextPage}
       />

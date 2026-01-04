@@ -1,40 +1,47 @@
 import React from "react";
-import { ActivityIndicator } from "react-native";
+import { Image } from "react-native";
 import { AppContainer } from "@/components/app/app-container";
 import { Box } from "@/components/ui/box";
 import { Text } from "@/components/ui/text";
 import { Button, ButtonText } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { useGoogleAuth } from "@/lib/hooks/useGoogleAuth";
+import { View } from "@/components/Themed";
 
 export default function LoginScreen() {
   const { signInWithGoogle, loading } = useGoogleAuth();
 
   return (
-    <AppContainer headerTitle="로그인" showBackButton>
-      <Box className="flex-1 items-center justify-center space-y-6 bg-white p-6">
-        <Text className="text-2xl font-bold">로그인</Text>
+    <AppContainer headerTitle="login" showBackButton disableScroll={true}>
+      <View className="h-full flex-1 items-center justify-center">
+        <Box className="flex items-center justify-center space-y-6 p-6">
+          {loading ? (
+            <Box className="mt-4 items-center justify-center">
+              <Spinner size="large" />
+              <Text className="mt-2 text-gray-500">Processing login...</Text>
+            </Box>
+          ) : (
+            <Button
+              className="bg-blue-600 data-[hover=true]:bg-blue-700"
+              onPress={signInWithGoogle}
+              isDisabled={loading}
+            >
+              <Image
+                source={require("#/images/icons/google_icon.png")}
+                style={{ width: 20, height: 20 }}
+              />
+              <ButtonText className="text-base font-semibold text-white">
+                Sign in with Google
+              </ButtonText>
+            </Button>
+          )}
 
-        {loading ? (
-          <Box className="mt-4 items-center justify-center">
-            <ActivityIndicator size="large" />
-            <Text className="mt-2 text-gray-500">로그인 중...</Text>
-          </Box>
-        ) : (
-          <Button
-            className="mt-2 w-full rounded-xl bg-red-500"
-            onPress={signInWithGoogle}
-            isDisabled={loading}
-          >
-            <ButtonText className="text-base font-semibold text-white">
-              Google 계정으로 로그인
-            </ButtonText>
-          </Button>
-        )}
-
-        <Text className="mt-6 px-6 text-center text-gray-400">
-          처음 로그인 시 자동으로 회원가입 페이지로 이동합니다.
-        </Text>
-      </Box>
+          <Text className="mt-6 px-6 text-center text-gray-400">
+            First-time login will automatically redirect you to the sign-up
+            page.
+          </Text>
+        </Box>
+      </View>
     </AppContainer>
   );
 }

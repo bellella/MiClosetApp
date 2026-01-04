@@ -9,16 +9,16 @@ import {
   reviewsGetReviewableItems,
 } from "@/lib/api/generated/reviews/reviews";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import {
-  ActivityIndicator,
-  FlatList,
-  Image,
-  RefreshControl,
-} from "react-native";
+import { FlatList, Image, RefreshControl } from "react-native";
+import { ListLoading } from "@/components/common/loading/ListLoading";
 import { useRouter } from "expo-router";
 import { Star } from "lucide-react-native";
 import { useState } from "react";
-import { ReviewableLineItem } from "@/lib/api/model";
+import { ReviewableLineItem, ReviewWithoutUser } from "@/lib/api/model";
+import { formatLocalDate } from "@/lib/utils/date.utils";
+import { PageLoading } from "@/components/common/loading/PageLoading";
+import { Button, ButtonText } from "@/components/ui/button";
+import { View } from "@/components/Themed";
 
 export default function ReviewsScreen() {
   const router = useRouter();
@@ -67,7 +67,7 @@ export default function ReviewsScreen() {
           )
         }
       >
-        <HStack className="gap-x-3">
+        <HStack className="items-center gap-x-3">
           {variant?.image?.url && (
             <Image
               source={{ uri: variant.image.url }}
@@ -79,28 +79,34 @@ export default function ReviewsScreen() {
               {item.title}
             </Text>
             <Text size="xs" className="text-gray-500">
-              {variant?.title || ""} | {item.quantity}개
+              {variant?.title || ""} | {item.quantity} pcs
             </Text>
             <Text size="xs" className="text-gray-400">
-              {new Date(item.processedAt).toLocaleDateString()}
+              {formatLocalDate(item.processedAt)}
             </Text>
           </VStack>
-          <Box className="items-center justify-center rounded-lg bg-pink-500 px-4 py-2">
-            <Text size="xs" className="text-white" bold>
-              리뷰 쓰기
-            </Text>
-          </Box>
+          <Button>
+            <ButtonText>Write Review</ButtonText>
+          </Button>
         </HStack>
       </Pressable>
     );
   };
 
-  const renderWrittenItem = ({ item }: { item: any }) => (
+  const renderWrittenItem = ({ item }: { item: ReviewWithoutUser }) => (
     <Pressable
       className="border-b border-gray-200 p-4"
       onPress={() => router.push(`/(stack)/(user)/reviews/${item.id}`)}
     >
-      <HStack className="gap-x-3">
+      <Box className="gap-x-3">
+        <Image
+          source={{ uri: item.productImageUrl }}
+          className="h-20 w-20 rounded-lg"
+        />
+        <Text size="sm" className="mb-2" numberOfLines={2} bold>
+          {item.title || "No title"}
+        </Text>
+
         {item.images?.[0] && (
           <Image
             source={{ uri: item.images[0] }}
@@ -118,78 +124,76 @@ export default function ReviewsScreen() {
               />
             ))}
           </HStack>
-          <Text size="sm" numberOfLines={2} bold>
-            {item.title || "No title"}
-          </Text>
           <Text size="xs" className="text-gray-600" numberOfLines={2}>
             {item.body}
           </Text>
           <Text size="xs" className="text-gray-400">
-            {new Date(item.createdAt).toLocaleDateString()}
+            {formatLocalDate(item.createdAt)}
           </Text>
         </VStack>
-      </HStack>
+      </Box>
     </Pressable>
   );
 
   const isLoading =
     activeTab === "reviewable" ? isLoadingReviewable : isLoadingWritten;
 
+  const tabs = [
+    {
+      key: "reviewable" as const,
+      label: "To Write",
+      count: reviewableItems.length,
+    },
+    {
+      key: "written" as const,
+      label: "Written",
+      count: writtenItems.length,
+    },
+  ];
+
   return (
-    <AppContainer headerTitle="리뷰 관리" showBackButton>
+    <AppContainer headerTitle="My Reviews" showBackButton disableScroll>
       <VStack className="flex-1">
         {/* Tab Header */}
         <HStack className="border-b border-gray-200">
-          <Pressable
-            className={`flex-1 items-center border-b-2 py-4 ${
-              activeTab === "reviewable"
-                ? "border-pink-500"
-                : "border-transparent"
-            }`}
-            onPress={() => setActiveTab("reviewable")}
-          >
-            <Text
-              size="sm"
-              bold={activeTab === "reviewable"}
-              className={
-                activeTab === "reviewable" ? "text-pink-500" : "text-gray-500"
-              }
+          {tabs.map((tab) => (
+            <Pressable
+              key={tab.key}
+              className={`flex-1 items-center border-b-2 py-4 ${
+                activeTab === tab.key
+                  ? "border-primary-500"
+                  : "border-transparent"
+              }`}
+              onPress={() => setActiveTab(tab.key)}
             >
-              리뷰 작성 ({reviewableItems.length})
-            </Text>
-          </Pressable>
-          <Pressable
-            className={`flex-1 items-center border-b-2 py-4 ${
-              activeTab === "written" ? "border-pink-500" : "border-transparent"
-            }`}
-            onPress={() => setActiveTab("written")}
-          >
-            <Text
-              size="sm"
-              bold={activeTab === "written"}
-              className={
-                activeTab === "written" ? "text-pink-500" : "text-gray-500"
-              }
-            >
-              작성한 리뷰 ({writtenItems.length})
-            </Text>
-          </Pressable>
+              <Text
+                size="sm"
+                bold={activeTab === tab.key}
+                className={
+                  activeTab === tab.key ? "text-primary-500" : "text-gray-500"
+                }
+              >
+                {tab.label} ({tab.count})
+              </Text>
+            </Pressable>
+          ))}
         </HStack>
 
         {/* Content */}
         {isLoading ? (
-          <Box className="flex-1 items-center justify-center">
-            <ActivityIndicator size="large" />
-          </Box>
+          <PageLoading />
         ) : activeTab === "reviewable" ? (
           <FlatList
             data={reviewableItems}
             renderItem={renderReviewableItem}
             keyExtractor={(item) => item.lineItemId}
+            contentContainerStyle={{ paddingBottom: 20 }}
             ListEmptyComponent={
-              <Box className="items-center justify-center py-20">
-                <Text className="text-gray-400">작성 가능한 리뷰가 없습니다</Text>
-              </Box>
+              <View className="items-center justify-center py-20">
+                <Text className="text-gray-400">
+                  No reviews available to write
+                </Text>
+              </View>
             }
           />
         ) : (
@@ -197,23 +201,18 @@ export default function ReviewsScreen() {
             data={writtenItems}
             renderItem={renderWrittenItem}
             keyExtractor={(item) => item.id.toString()}
+            contentContainerStyle={{ paddingBottom: 20 }}
             onEndReached={() => hasNextPage && fetchNextPage()}
             onEndReachedThreshold={0.2}
             refreshControl={
               <RefreshControl refreshing={isRefetching} onRefresh={refetch} />
             }
             ListEmptyComponent={
-              <Box className="items-center justify-center py-20">
-                <Text className="text-gray-400">작성한 리뷰가 없습니다</Text>
-              </Box>
+              <View className="items-center justify-center py-20">
+                <Text className="text-gray-400">No reviews written yet</Text>
+              </View>
             }
-            ListFooterComponent={
-              isFetchingNextPage ? (
-                <Box className="items-center justify-center py-4">
-                  <ActivityIndicator size="large" />
-                </Box>
-              ) : null
-            }
+            ListFooterComponent={<ListLoading isLoading={isFetchingNextPage} />}
           />
         )}
       </VStack>

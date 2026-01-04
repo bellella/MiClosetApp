@@ -6,4 +6,15 @@
  * OpenAPI spec version: 1.0
  */
 
-export interface UpdateReviewDto { [key: string]: unknown }
+export interface UpdateReviewDto {
+  productId?: string;
+  lineItemId?: string;
+  /**
+   * @minimum 1
+   * @maximum 5
+   */
+  rating?: number;
+  body?: string;
+  title?: string;
+  images?: Blob[];
+}
