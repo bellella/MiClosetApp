@@ -20,6 +20,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { QueryClient } from "@tanstack/react-query";
 import { ApolloProvider } from "@apollo/client";
 import { AuthProvider } from "@/components/app/AuthProvider";
+import { expoThemeDark, expoThemeLight } from "@/theme/expoTheme";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -58,7 +59,7 @@ export default function RootLayout() {
 const queryClient = new QueryClient();
 
 function RootLayoutNav() {
-  const colorScheme = useColorScheme();
+  const colorScheme = useColorScheme() ?? "light";
   const { updateMaxContentWidth } = useLayoutStore();
 
   useEffect(() => {
@@ -71,8 +72,10 @@ function RootLayoutNav() {
   }, []);
 
   return (
-    <GluestackUIProvider mode="light">
-      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+    <GluestackUIProvider mode={colorScheme}>
+      <ThemeProvider
+        value={colorScheme === "dark" ? expoThemeDark : expoThemeLight}
+      >
         <SafeAreaProvider>
           <SafeAreaView edges={["top"]} style={{ flex: 1 }}>
             <QueryClientProvider client={queryClient}>

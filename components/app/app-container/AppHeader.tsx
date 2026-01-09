@@ -1,4 +1,4 @@
-import { Image } from "react-native";
+import { Image, useColorScheme } from "react-native";
 import { Pressable } from "@/components/ui/pressable";
 import { Text } from "@/components/ui/text";
 import { Ionicons } from "@expo/vector-icons";
@@ -6,7 +6,7 @@ import { useNavigation } from "@react-navigation/native";
 import { Link } from "expo-router";
 import { View } from "react-native";
 import { Box } from "@/components/ui/box";
-import { Colors } from "@/constants/Colors";
+import { Colors } from "@/theme/colors.generated";
 type AppHeaderProps = {
   title?: string;
   left?: React.ReactNode;
@@ -26,6 +26,8 @@ export function AppHeader({
   showCart = false,
   showSearch = false,
 }: AppHeaderProps) {
+  const scheme = useColorScheme() ?? "light";
+  const iconColor = Colors.scheme[scheme].primary;
   const navigation = useNavigation();
 
   return (
@@ -35,11 +37,7 @@ export function AppHeader({
           {left}
           {showBackButton && (
             <Pressable onPress={() => navigation.goBack()}>
-              <Ionicons
-                name="chevron-back"
-                size={20}
-                color={Colors.light.icon}
-              />
+              <Ionicons name="chevron-back" size={20} color={iconColor} />
             </Pressable>
           )}
           <View />
@@ -72,12 +70,12 @@ export function AppHeader({
           {right}
           {showSearch && (
             <Link href="/search">
-              <Ionicons name="search" size={20} color={Colors.light.icon} />
+              <Ionicons name="search" size={20} color={iconColor} />
             </Link>
           )}
           {showCart && (
             <Link href="/cart">
-              <Ionicons name="cart" size={20} color={Colors.light.icon} />
+              <Ionicons name="cart" size={20} color={iconColor} />
             </Link>
           )}
         </View>

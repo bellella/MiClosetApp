@@ -1,9 +1,9 @@
 "use client";
-import { ActivityIndicator } from "react-native";
+import { ActivityIndicator, useColorScheme } from "react-native";
 import React from "react";
 import { tva } from "@gluestack-ui/utils/nativewind-utils";
 import { cssInterop } from "nativewind";
-import { Colors } from "@/constants/Colors";
+import { Colors } from "@/theme/colors";
 
 cssInterop(ActivityIndicator, {
   className: { target: "style", nativeStyleToProp: { color: true } },
@@ -24,13 +24,14 @@ const Spinner = React.forwardRef<
   },
   ref
 ) {
+  const scheme = useColorScheme() ?? "light";
   return (
     <ActivityIndicator
       ref={ref}
       focusable={focusable}
       aria-label={ariaLabel}
       {...props}
-      color={color ?? Colors.light.icon}
+      color={color ?? Colors.scheme[scheme].primary}
       className={spinnerStyle({ class: className })}
     />
   );

@@ -1,17 +1,12 @@
 import React from "react";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-
-// You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
-function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>["name"];
-  color: string;
-}) {
-  return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
-}
+import { Colors } from "@/theme/colors";
+import { useColorScheme } from "react-native";
 
 export default function TabLayout() {
+  const scheme = useColorScheme() ?? "light";
+  const colors = Colors.scheme[scheme];
   return (
     <Tabs
       screenOptions={{
@@ -20,9 +15,10 @@ export default function TabLayout() {
           maxWidth: 600,
           width: "100%",
           alignSelf: "center",
+          //borderTopColor: colors.primary,
         },
-        tabBarActiveTintColor: "rgb(153 122 159)",
-        tabBarInactiveTintColor: "rgb(171 164 174)",
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.secondary,
       }}
     >
       <Tabs.Screen
