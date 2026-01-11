@@ -6,14 +6,14 @@ import { ProductCollectionProps } from "@/types";
 import { ProductListGrid } from "../products/product-list/Grid";
 import { ProductListSlider } from "../products/product-list/Slider";
 import { shopifyToProductCards } from "@/lib/utils/product.utils";
-import { useWishlistIds } from "@/lib/hooks/useWishlist";
+import { useWishlistIdsMap } from "@/lib/hooks/useWishlist";
 
 export type ProductUIType = "grid" | "slider";
 
 const COLLECTIONS = [
-  { handle: "sale2", ui: "slider" },
-  { handle: "new-arrivals", ui: "grid" },
-  { handle: "best-sellers", ui: "slider" },
+  { handle: "top1", ui: "slider" },
+  { handle: "top2", ui: "grid" },
+  { handle: "top3", ui: "slider" },
 ] as const;
 
 const collectionUIMap: Record<
@@ -25,7 +25,7 @@ const collectionUIMap: Record<
 };
 
 export function HomeCollections() {
-  const { data: wishListData } = useWishlistIds();
+  const wishlistMap = useWishlistIdsMap();
   const results = useQueries({
     queries: COLLECTIONS.map(({ handle }) => ({
       queryKey: ["collection", handle],
@@ -36,7 +36,6 @@ export function HomeCollections() {
         }),
     })),
   });
-  console.log(wishListData?.idsMap, "??");
 
   return (
     <>
@@ -47,12 +46,12 @@ export function HomeCollections() {
         const Component = collectionUIMap[ui];
         const products = shopifyToProductCards(
           data.collection.products.nodes,
-          wishListData?.idsMap
+          wishlistMap
         );
         return (
           <Box key={handle} className="space-y-4">
             <Component
-              title={data.collection.title ?? ""}
+              title={data.collection.description ?? ""}
               products={products}
             />
           </Box>

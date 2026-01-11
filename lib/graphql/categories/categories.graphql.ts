@@ -32,6 +32,7 @@ export type GetSubCategoriesQueryVariables = Types.Exact<{
 
 
 export type GetSubCategoriesQuery = { __typename?: 'QueryRoot', collection?: { __typename?: 'Collection', id: string, title: string, handle: string, metafield?: { __typename?: 'Metafield', type: string, references?: { __typename?: 'MetafieldReferenceConnection', nodes: Array<
+          | { __typename: 'Article' }
           | { __typename: 'Collection', id: string, title: string, handle: string, image?: { __typename?: 'Image', url: any, altText?: string | null } | null }
           | { __typename: 'GenericFile' }
           | { __typename: 'MediaImage' }
@@ -55,6 +56,7 @@ export type GetAllCategoriesByIdsQuery = { __typename?: 'QueryRoot', nodes: Arra
     | { __typename?: 'Cart' }
     | { __typename?: 'CartLine' }
     | { __typename?: 'Collection', id: string, title: string, metafield?: { __typename?: 'Metafield', references?: { __typename?: 'MetafieldReferenceConnection', nodes: Array<
+            | { __typename?: 'Article' }
             | { __typename?: 'Collection', id: string, title: string }
             | { __typename?: 'GenericFile' }
             | { __typename?: 'MediaImage' }

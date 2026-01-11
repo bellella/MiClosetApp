@@ -1,8 +1,6 @@
 import React from "react";
-import { FlatList } from "react-native";
 import { useRouter } from "expo-router";
 import { ProductCardSmall } from "../product-card/Small";
-import { CollectionProduct } from "@/lib/graphql/types/product.type";
 import { ProductListBase } from "./Base";
 import { CustomFlatList } from "@/components/common/CustomFaltList";
 import { ProductItem } from "@/types";
@@ -20,7 +18,7 @@ export function ProductListSlider({
 }: ProductSliderProps) {
   const router = useRouter();
 
-  const renderItem = ({ item }: { item: CollectionProduct }) => (
+  const renderItem = ({ item }: { item: ProductItem }) => (
     <ProductCardSmall
       product={item}
       width={160}
@@ -33,7 +31,7 @@ export function ProductListSlider({
       <CustomFlatList
         data={products}
         horizontal
-        keyExtractor={(item: CollectionProduct) => item.id.toString()}
+        keyExtractor={(item: ProductItem) => item.id.toString()}
         renderItem={renderItem}
         contentContainerStyle={{ paddingHorizontal: 8, gap: 8 }}
       />

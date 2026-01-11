@@ -35,6 +35,9 @@ directive @inContext(
 
   """The identifier of the customer's preferred location."""
   preferredLocationId: ID
+
+  """The visitor's consent preferences for data processing purposes."""
+  visitorConsent: VisitorConsent
 ) on MUTATION | QUERY
 
 "A version of the API, as defined by [Shopify API versioning](https://shopify.dev/api/usage/versioning).\nVersions are commonly referred to by their handle (for example, `2021-10`).\n"
@@ -820,6 +823,20 @@ enum CartCardSource {
   SAVED_CREDIT_CARD
 }
 
+"""Return type for `cartClone` mutation."""
+type CartClonePayload {
+  """
+  The newly created cart without PII. This is a different cart from the source.
+  """
+  cart: Cart
+
+  """The list of errors that occurred from executing the mutation."""
+  userErrors: [CartUserError!]!
+
+  """A list of warnings that occurred during the mutation."""
+  warnings: [CartWarning!]!
+}
+
 """
 The discount that has been applied to the cart line using a discount code.
 """
@@ -1062,6 +1079,18 @@ type CartDeliveryAddressesAddPayload {
 
 """Return type for `cartDeliveryAddressesRemove` mutation."""
 type CartDeliveryAddressesRemovePayload {
+  """The updated cart."""
+  cart: Cart
+
+  """The list of errors that occurred from executing the mutation."""
+  userErrors: [CartUserError!]!
+
+  """A list of warnings that occurred during the mutation."""
+  warnings: [CartWarning!]!
+}
+
+"""Return type for `cartDeliveryAddressesReplace` mutation."""
+type CartDeliveryAddressesReplacePayload {
   """The updated cart."""
   cart: Cart
 
@@ -1352,6 +1381,18 @@ enum CartErrorCode {
   """The specified address field is too long."""
   ADDRESS_FIELD_IS_TOO_LONG
 
+  """Bundles and addons cannot be mixed."""
+  BUNDLES_AND_ADDONS_CANNOT_BE_MIXED
+
+  """Buyer cannot purchase for company location."""
+  BUYER_CANNOT_PURCHASE_FOR_COMPANY_LOCATION
+
+  """The cart is too large to save."""
+  CART_TOO_LARGE
+
+  """The specified gift card recipient is invalid."""
+  GIFT_CARD_RECIPIENT_INVALID
+
   """The input value is invalid."""
   INVALID
 
@@ -1379,6 +1420,9 @@ enum CartErrorCode {
   """The payment wasn't valid."""
   INVALID_PAYMENT
 
+  """The payment is invalid. Deferred payment is required."""
+  INVALID_PAYMENT_DEFERRED_PAYMENT_REQUIRED
+
   """Cannot update payment on an empty cart"""
   INVALID_PAYMENT_EMPTY_CART
 
@@ -1393,6 +1437,9 @@ enum CartErrorCode {
 
   """The quantity must be below the specified maximum for the item."""
   MAXIMUM_EXCEEDED
+
+  """Item cannot be purchased as configured."""
+  MERCHANDISE_NOT_APPLICABLE
 
   """The quantity must be above the specified minimum for the item."""
   MINIMUM_NOT_MET
@@ -1412,11 +1459,65 @@ enum CartErrorCode {
   """Only one delivery address can be selected."""
   ONLY_ONE_DELIVERY_ADDRESS_CAN_BE_SELECTED
 
+  """Cannot reference existing parent lines by variant_id."""
+  PARENT_LINE_INVALID_REFERENCE
+
+  """Parent line nesting is too deep or circular."""
+  PARENT_LINE_NESTING_TOO_DEEP
+
+  """Parent line not found."""
+  PARENT_LINE_NOT_FOUND
+
+  """Nested cartlines are blocked due to an incompatibility."""
+  PARENT_LINE_OPERATION_BLOCKED
+
+  """Credit card has expired."""
+  PAYMENTS_CREDIT_CARD_BASE_EXPIRED
+
+  """Credit card gateway is not supported."""
+  PAYMENTS_CREDIT_CARD_BASE_GATEWAY_NOT_SUPPORTED
+
+  """Credit card error."""
+  PAYMENTS_CREDIT_CARD_GENERIC
+
+  """Credit card month is invalid."""
+  PAYMENTS_CREDIT_CARD_MONTH_INCLUSION
+
+  """Credit card number is invalid."""
+  PAYMENTS_CREDIT_CARD_NUMBER_INVALID
+
+  """Credit card number format is invalid."""
+  PAYMENTS_CREDIT_CARD_NUMBER_INVALID_FORMAT
+
+  """Credit card verification value is blank."""
+  PAYMENTS_CREDIT_CARD_VERIFICATION_VALUE_BLANK
+
+  """Credit card verification value is invalid for card type."""
+  PAYMENTS_CREDIT_CARD_VERIFICATION_VALUE_INVALID_FOR_CARD_TYPE
+
+  """Credit card has expired."""
+  PAYMENTS_CREDIT_CARD_YEAR_EXPIRED
+
+  """Credit card expiry year is invalid."""
+  PAYMENTS_CREDIT_CARD_YEAR_INVALID_EXPIRY_YEAR
+
+  """The payment method is not applicable."""
+  PAYMENT_METHOD_NOT_APPLICABLE
+
   """The payment method is not supported."""
   PAYMENT_METHOD_NOT_SUPPORTED
 
+  """The delivery group is in a pending state."""
+  PENDING_DELIVERY_GROUPS
+
   """The given province cannot be found."""
   PROVINCE_NOT_FOUND
+
+  """Selling plan is not applicable."""
+  SELLING_PLAN_NOT_APPLICABLE
+
+  """An error occurred while saving the cart."""
+  SERVICE_UNAVAILABLE
 
   """Too many delivery addresses on Cart."""
   TOO_MANY_DELIVERY_ADDRESSES
@@ -1426,6 +1527,9 @@ enum CartErrorCode {
 
   """Validation failed."""
   VALIDATION_CUSTOM
+
+  """Variant can only be purchased with a selling plan."""
+  VARIANT_REQUIRES_SELLING_PLAN
 
   """The given zip code is unsupported."""
   ZIP_CODE_NOT_SUPPORTED
@@ -1459,6 +1563,18 @@ type CartEstimatedCost {
 input CartFreePaymentMethodInput {
   """The customer's billing address."""
   billingAddress: MailingAddressInput!
+}
+
+"""Return type for `cartGiftCardCodesAdd` mutation."""
+type CartGiftCardCodesAddPayload {
+  """The updated cart."""
+  cart: Cart
+
+  """The list of errors that occurred from executing the mutation."""
+  userErrors: [CartUserError!]!
+
+  """A list of warnings that occurred during the mutation."""
+  warnings: [CartWarning!]!
 }
 
 """Return type for `cartGiftCardCodesRemove` mutation."""
@@ -1573,8 +1689,14 @@ type CartLine implements BaseCartLine & Node {
   """A globally-unique ID."""
   id: ID!
 
+  """The instructions for the line item."""
+  instructions: CartLineInstructions!
+
   """The merchandise that the buyer intends to purchase."""
   merchandise: Merchandise!
+
+  """The parent of the line item."""
+  parentRelationship: CartLineParentRelationship
 
   """The quantity of the merchandise that the customer intends to purchase."""
   quantity: Int!
@@ -1627,6 +1749,9 @@ input CartLineInput {
   """The ID of the merchandise that the buyer intends to purchase."""
   merchandiseId: ID!
 
+  """The parent line item of the cart line."""
+  parent: CartLineParentInput
+
   """The quantity of the merchandise."""
   quantity: Int = 1
 
@@ -1634,6 +1759,30 @@ input CartLineInput {
   The ID of the selling plan that the merchandise is being purchased with.
   """
   sellingPlanId: ID
+}
+
+"""Represents instructions for a cart line item."""
+type CartLineInstructions {
+  """Whether the line item can be removed from the cart."""
+  canRemove: Boolean!
+
+  """Whether the line item quantity can be updated."""
+  canUpdateQuantity: Boolean!
+}
+
+"""The parent line item of the cart line."""
+input CartLineParentInput {
+  """The id of the parent line item."""
+  lineId: ID
+
+  """The ID of the parent line merchandise."""
+  merchandiseId: ID
+}
+
+"""Represents the parent relationship of a cart line."""
+type CartLineParentRelationship {
+  """The parent cart line."""
+  parent: CartLine!
 }
 
 """The input fields to update a line item on a cart."""
@@ -1830,6 +1979,18 @@ type CartPrepareForCompletionPayload {
 """The result of cart preparation."""
 union CartPrepareForCompletionResult = CartStatusNotReady | CartStatusReady | CartThrottled
 
+"""Return type for `cartRemovePersonalData` mutation."""
+type CartRemovePersonalDataPayload {
+  """The updated cart."""
+  cart: Cart
+
+  """The list of errors that occurred from executing the mutation."""
+  userErrors: [CartUserError!]!
+
+  """A list of warnings that occurred during the mutation."""
+  warnings: [CartWarning!]!
+}
+
 "A selectable delivery address for a cart.\n"
 type CartSelectableAddress {
   """The delivery address."""
@@ -1936,6 +2097,9 @@ union CartSubmitForCompletionResult = SubmitAlreadyAccepted | SubmitFailed | Sub
 
 "Response signifying that the access to cart request is currently being throttled.\nThe client can retry after `poll_after`.\n"
 type CartThrottled {
+  """The result of cart preparation for completion."""
+  cart: Cart
+
   """The polling delay."""
   pollAfter: DateTime!
 }
@@ -1975,6 +2139,42 @@ type CartWarning {
 
 """The code for the cart warning."""
 enum CartWarningCode {
+  """The discount code cannot be honored."""
+  DISCOUNT_CODE_NOT_HONOURED
+
+  """The discount is currently inactive."""
+  DISCOUNT_CURRENTLY_INACTIVE
+
+  """The customer is not eligible for this discount."""
+  DISCOUNT_CUSTOMER_NOT_ELIGIBLE
+
+  """The customer's discount usage limit has been reached."""
+  DISCOUNT_CUSTOMER_USAGE_LIMIT_REACHED
+
+  """An eligible customer is missing for this discount."""
+  DISCOUNT_ELIGIBLE_CUSTOMER_MISSING
+
+  """The purchase type is incompatible with this discount."""
+  DISCOUNT_INCOMPATIBLE_PURCHASE_TYPE
+
+  """The discount was not found."""
+  DISCOUNT_NOT_FOUND
+
+  """There are no entitled line items for this discount."""
+  DISCOUNT_NO_ENTITLED_LINE_ITEMS
+
+  """There are no entitled shipping lines for this discount."""
+  DISCOUNT_NO_ENTITLED_SHIPPING_LINES
+
+  """The purchase is not in range for this discount."""
+  DISCOUNT_PURCHASE_NOT_IN_RANGE
+
+  """The quantity is not in range for this discount."""
+  DISCOUNT_QUANTITY_NOT_IN_RANGE
+
+  """The discount usage limit has been reached."""
+  DISCOUNT_USAGE_LIMIT_REACHED
+
   """A delivery address with the same details already exists on this cart."""
   DUPLICATE_DELIVERY_ADDRESS
 
@@ -1983,6 +2183,9 @@ enum CartWarningCode {
 
   """The merchandise is out of stock."""
   MERCHANDISE_OUT_OF_STOCK
+
+  """Only one-time purchase is available for B2B orders."""
+  MERCHANDISE_SELLING_PLAN_NOT_APPLICABLE_ON_COMPANY_LOCATION
 
   """Gift cards are not available as a payment method."""
   PAYMENTS_GIFT_CARDS_UNAVAILABLE
@@ -2402,11 +2605,14 @@ type Country {
   """The currency of the country."""
   currency: Currency!
 
+  """The default language for the country."""
+  defaultLanguage: Language!
+
   """The ISO code of the country."""
   isoCode: CountryCode!
 
   """The market that includes this country."""
-  market: Market
+  market: Market @deprecated(reason: "This `market` field will be removed in a future version of the API.")
 
   """The name of the country."""
   name: String!
@@ -3696,6 +3902,9 @@ type Customer implements HasMetafields {
     reverse: Boolean = false
   ): MailingAddressConnection!
 
+  """The URL of the customer's avatar image."""
+  avatarUrl: String
+
   """The date and time when the customer was created."""
   createdAt: DateTime!
 
@@ -3773,6 +3982,9 @@ type Customer implements HasMetafields {
 
   """The customer’s phone number."""
   phone: String
+
+  """The social login provider associated with the customer."""
+  socialLoginProvider: SocialLoginProvider
 
   "A comma separated list of tags that have been added to the customer.\nAdditional access scope required: unauthenticated_read_customer_tags.\n"
   tags: [String!]!
@@ -4575,6 +4787,9 @@ type Image {
   """The location of the image as a URL."""
   src: URL! @deprecated(reason: "Use `url` instead.")
 
+  "The ThumbHash of the image.\n\nUseful to display placeholder images while the original image is loading.\n\nSee https://evanw.github.io/thumbhash/ for details on how to use it.\n"
+  thumbhash: String
+
   "The location of the transformed image as a URL.\n\nAll transformation arguments are considered \"best-effort\". If they can be applied to an image, they will be.\nOtherwise any transformations which an image type doesn't support will be ignored.\n"
   transformedSrc(
     """Crops the image according to the specified region."""
@@ -5149,7 +5364,7 @@ type Localization {
   """
   The market including the country of the active localized experience. Use the `@inContext` directive to change this value.
   """
-  market: Market!
+  market: Market! @deprecated(reason: "This `market` field will be removed in a future version of the API.")
 }
 
 """Represents a location where product inventory is held."""
@@ -5540,7 +5755,7 @@ type MediaPresentation implements Node {
   ): JSON
 
   """A globally-unique ID."""
-  id: ID!
+  id: ID! @deprecated(reason: "MediaPresentation IDs are being deprecated. Access the data directly via the asJson field on the Media type.")
 }
 
 """The possible formats for a media presentation."""
@@ -5743,7 +5958,7 @@ input MetafieldFilter {
 union MetafieldParentResource = Article | Blog | Cart | Collection | Company | CompanyLocation | Customer | Location | Market | Order | Page | Product | ProductVariant | SellingPlan | Shop
 
 "Returns the resource which is being referred to by a metafield.\n"
-union MetafieldReference = Collection | GenericFile | MediaImage | Metaobject | Model3d | Page | Product | ProductVariant | Video
+union MetafieldReference = Article | Collection | GenericFile | MediaImage | Metaobject | Model3d | Page | Product | ProductVariant | Video
 
 "An auto-generated type for paginating through multiple MetafieldReferences.\n"
 type MetafieldReferenceConnection {
@@ -5841,9 +6056,7 @@ type Metaobject implements Node & OnlineStorePublishable {
   "The metaobject's SEO information. Returns `null` if the metaobject definition\ndoesn't have the `renderable` capability.\n"
   seo: MetaobjectSEO
 
-  """
-  The type of the metaobject. Defines the namespace of its associated metafields.
-  """
+  """The type of the metaobject."""
   type: String!
 
   """The date and time when the metaobject was last updated."""
@@ -6010,6 +6223,14 @@ type Mutation {
     cartId: ID!
   ): CartBuyerIdentityUpdatePayload
 
+  """
+  Creates a clone of the specified cart with all personally identifiable information removed.
+  """
+  cartClone(
+    """The ID of the cart to clone."""
+    cartId: ID!
+  ): CartClonePayload
+
   """Creates a new cart."""
   cartCreate(
     """The fields used to create a cart."""
@@ -6042,6 +6263,19 @@ type Mutation {
     cartId: ID!
   ): CartDeliveryAddressesRemovePayload
 
+  """Replaces delivery addresses on the cart."""
+  cartDeliveryAddressesReplace(
+    """
+    A list of delivery addresses to replace on the cart.
+    
+    The input must not contain more than `250` values.
+    """
+    addresses: [CartSelectableAddressInput!]!
+
+    """The ID of the cart."""
+    cartId: ID!
+  ): CartDeliveryAddressesReplacePayload
+
   """Updates one or more delivery addresses on a cart."""
   cartDeliveryAddressesUpdate(
     """
@@ -6065,8 +6299,21 @@ type Mutation {
     
     The input must not contain more than `250` values.
     """
-    discountCodes: [String!]
+    discountCodes: [String!]!
   ): CartDiscountCodesUpdatePayload
+
+  """Adds gift card codes to the cart without replacing existing ones."""
+  cartGiftCardCodesAdd(
+    """The ID of the cart."""
+    cartId: ID!
+
+    """
+    The case-insensitive gift card codes to add.
+    
+    The input must not contain more than `250` values.
+    """
+    giftCardCodes: [String!]!
+  ): CartGiftCardCodesAddPayload
 
   """Removes the gift card codes applied to the cart."""
   cartGiftCardCodesRemove(
@@ -6172,6 +6419,12 @@ type Mutation {
     """The ID of the cart."""
     cartId: ID!
   ): CartPrepareForCompletionPayload
+
+  """Removes personally identifiable information from the cart."""
+  cartRemovePersonalData(
+    """The ID of the cart."""
+    cartId: ID!
+  ): CartRemovePersonalDataPayload
 
   """Update the selected delivery options for a delivery group."""
   cartSelectedDeliveryOptionsUpdate(
@@ -8760,6 +9013,14 @@ type Shop implements HasMetafields & Node {
   """The shop's branding configuration."""
   brand: Brand
 
+  """Translations for customer accounts."""
+  customerAccountTranslations: [Translation!]
+
+  """
+  The URL for the customer account (only present if shop has a customer account vanity domain).
+  """
+  customerAccountUrl: String
+
   """A description of the shop."""
   description: String
 
@@ -8819,6 +9080,9 @@ type Shop implements HasMetafields & Node {
 
   """The Shop Pay Installments pricing information for the shop."""
   shopPayInstallmentsPricing: ShopPayInstallmentsPricing
+
+  """The social login providers for customer accounts."""
+  socialLoginProviders: [SocialLoginProvider!]!
 
   """The shop’s subscription policy."""
   subscriptionPolicy: ShopPolicyWithDefault
@@ -9437,9 +9701,7 @@ type SitemapResourceMetaobject implements SitemapResourceInterface {
   """
   onlineStoreUrlHandle: String
 
-  """
-  The type of the metaobject. Defines the namespace of its associated metafields.
-  """
+  """The type of the metaobject."""
   type: String!
 
   """The date and time when the resource was updated."""
@@ -9465,6 +9727,12 @@ enum SitemapType {
 
   """Products present in the sitemap."""
   PRODUCT
+}
+
+"""A social login provider for customer accounts."""
+type SocialLoginProvider {
+  """The handle of the social login provider."""
+  handle: String!
 }
 
 "The availability of a product variant at a particular location.\nLocal pick-up must be enabled in the  store's shipping settings, otherwise this will return an empty result.\n"
@@ -9627,9 +9895,15 @@ enum SubmissionErrorCode {
   PAYMENTS_SHOPIFY_PAYMENTS_REQUIRED
   PAYMENTS_UNACCEPTABLE_PAYMENT_AMOUNT
   PAYMENTS_WALLET_CONTENT_MISSING
+
+  """Redirect to checkout required to complete this action."""
+  REDIRECT_TO_CHECKOUT_REQUIRED
   TAXES_DELIVERY_GROUP_ID_NOT_FOUND
   TAXES_LINE_ID_NOT_FOUND
   TAXES_MUST_BE_DEFINED
+
+  """Validation failed."""
+  VALIDATION_CUSTOM
 }
 
 """Cart submit for checkout completion is successful."""
@@ -9711,6 +9985,15 @@ interface Trackable {
   trackingParameters: String
 }
 
+"""Translation represents a translation of a key-value pair."""
+type Translation {
+  """The key of the translation."""
+  key: String!
+
+  """The value of the translation."""
+  value: String!
+}
+
 "Represents an [RFC 3986](https://datatracker.ietf.org/doc/html/rfc3986) and\n[RFC 3987](https://datatracker.ietf.org/doc/html/rfc3987)-compliant URI string.\n\nFor example, `\"https://example.myshopify.com\"` is a valid URL. It includes a scheme (`https`) and a host\n(`example.myshopify.com`).\n"
 scalar URL
 
@@ -9737,8 +10020,16 @@ enum UnitPriceMeasurementMeasuredType {
   """Unit of measurements representing areas."""
   AREA
 
+  """Unit of measurements representing counts."""
+  COUNT
+
   """Unit of measurements representing lengths."""
   LENGTH
+
+  """
+  The type of measurement is unknown. Upgrade to the latest version of the API to resolve this type.
+  """
+  UNKNOWN
 
   """Unit of measurements representing volumes."""
   VOLUME
@@ -9755,14 +10046,35 @@ enum UnitPriceMeasurementMeasuredUnit {
   """100 centimeters equals 1 meter."""
   CM
 
+  """Imperial system unit of volume (U.S. customary unit)."""
+  FLOZ
+
+  """1 foot equals 12 inches."""
+  FT
+
+  """Imperial system unit of area."""
+  FT2
+
   """Metric system unit of weight."""
   G
+
+  """1 gallon equals 128 fluid ounces (U.S. customary unit)."""
+  GAL
+
+  """Imperial system unit of length."""
+  IN
+
+  """1 item, a unit of count."""
+  ITEM
 
   """1 kilogram equals 1000 grams."""
   KG
 
   """Metric system unit of volume."""
   L
+
+  """Imperial system unit of weight."""
+  LB
 
   """Metric system unit of length."""
   M
@@ -9781,6 +10093,23 @@ enum UnitPriceMeasurementMeasuredUnit {
 
   """1000 millimeters equals 1 meter."""
   MM
+
+  """16 ounces equals 1 pound."""
+  OZ
+
+  """1 pint equals 16 fluid ounces (U.S. customary unit)."""
+  PT
+
+  """1 quart equals 32 fluid ounces (U.S. customary unit)."""
+  QT
+
+  """
+  The unit of measurement is unknown. Upgrade to the latest version of the API to resolve this unit.
+  """
+  UNKNOWN
+
+  """1 yard equals 36 inches."""
+  YD
 }
 
 """Systems of weights and measures."""
@@ -9913,6 +10242,29 @@ type VideoSource {
 
   """The width of the video."""
   width: Int!
+}
+
+"""
+The visitor's consent to data processing purposes for the shop. true means accepting the purposes, false means declining them, and null means that the visitor didn't express a preference.
+"""
+input VisitorConsent {
+  """The visitor accepts or rejects the analytics data processing purpose."""
+  analytics: Boolean
+
+  """
+  The visitor accepts or rejects the first and third party marketing data processing purposes.
+  """
+  marketing: Boolean
+
+  """
+  The visitor accepts or rejects the preferences data processing purpose.
+  """
+  preferences: Boolean
+
+  """
+  The visitor accepts or rejects the sale or sharing of their data with third parties.
+  """
+  saleOfData: Boolean
 }
 
 """Units of measurement for weight."""

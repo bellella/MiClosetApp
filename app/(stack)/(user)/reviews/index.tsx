@@ -63,7 +63,7 @@ export default function ReviewsScreen() {
         className="border-b border-gray-200 p-4"
         onPress={() =>
           router.push(
-            `/(stack)/(user)/reviews/write?productId=${item.productId}&lineItemId=${item.lineItemId}`
+            `/reviews/write?productId=${item.productId}&lineItemId=${item.lineItemId}`
           )
         }
       >
@@ -96,7 +96,9 @@ export default function ReviewsScreen() {
   const renderWrittenItem = ({ item }: { item: ReviewWithoutUser }) => (
     <Pressable
       className="border-b border-gray-200 p-4"
-      onPress={() => router.push(`/(stack)/(user)/reviews/${item.id}`)}
+      onPress={() => {
+        router.push(`/reviews/${item.id}`);
+      }}
     >
       <Box className="gap-x-3">
         <Image

@@ -67,6 +67,7 @@ query GetCollectionProductsByHandle($handle: String!, $first: Int!) {
   collection(handle: $handle) {
     id
     title
+    description
     products(first: $first) {
       nodes {
         id

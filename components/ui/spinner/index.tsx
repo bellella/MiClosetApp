@@ -3,7 +3,7 @@ import { ActivityIndicator, useColorScheme } from "react-native";
 import React from "react";
 import { tva } from "@gluestack-ui/utils/nativewind-utils";
 import { cssInterop } from "nativewind";
-import { Colors } from "@/theme/colors";
+import { Colors } from "@/theme/colors.generated";
 
 cssInterop(ActivityIndicator, {
   className: { target: "style", nativeStyleToProp: { color: true } },

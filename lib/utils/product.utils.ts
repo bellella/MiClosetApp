@@ -97,5 +97,5 @@ export function algoliaToProductCards(
   products: AlgoliaProduct[],
   wishListMap?: WishListMap
 ): ProductItem[] {
-  return products.map((p) => shopifyToProductCard(p, wishListMap));
+  return products.map((p) => algoliaToProductCard(p, wishListMap));
 }

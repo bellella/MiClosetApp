@@ -23,7 +23,7 @@ export type GetCollectionProductsByHandleQueryVariables = Types.Exact<{
 }>;
 
 
-export type GetCollectionProductsByHandleQuery = { __typename?: 'QueryRoot', collection?: { __typename?: 'Collection', id: string, title: string, products: { __typename?: 'ProductConnection', nodes: Array<{ __typename?: 'Product', id: string, title: string, handle: string, featuredImage?: { __typename?: 'Image', url: any, altText?: string | null } | null, priceRange: { __typename?: 'ProductPriceRange', minVariantPrice: { __typename?: 'MoneyV2', amount: any, currencyCode: Types.CurrencyCode } } }> } } | null };
+export type GetCollectionProductsByHandleQuery = { __typename?: 'QueryRoot', collection?: { __typename?: 'Collection', id: string, title: string, description: string, products: { __typename?: 'ProductConnection', nodes: Array<{ __typename?: 'Product', id: string, title: string, handle: string, featuredImage?: { __typename?: 'Image', url: any, altText?: string | null } | null, priceRange: { __typename?: 'ProductPriceRange', minVariantPrice: { __typename?: 'MoneyV2', amount: any, currencyCode: Types.CurrencyCode } } }> } } | null };
 
 export type GetCollectionProductsByIdQueryVariables = Types.Exact<{
   id: Types.Scalars['ID']['input'];
@@ -180,6 +180,7 @@ export const GetCollectionProductsByHandleDocument = gql`
   collection(handle: $handle) {
     id
     title
+    description
     products(first: $first) {
       nodes {
         id
