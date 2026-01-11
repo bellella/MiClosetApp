@@ -52,7 +52,7 @@ export default function MyPage() {
             </View>
           </Link> */}
 
-          <Link href="/reviews">
+          <Link href="/reviews" asChild>
             <View className="border-muted flex-row items-center justify-between border-b py-4">
               <View className="flex-row items-center space-x-3">
                 <FontAwesome name="comment-o" size={18} />
