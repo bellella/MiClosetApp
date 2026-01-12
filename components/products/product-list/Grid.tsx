@@ -2,11 +2,7 @@ import { ProductCardSmall } from "@/components/products/product-card/Small";
 import { CollectionProduct, ProductItem } from "@/types";
 import { useRouter } from "expo-router";
 import { ProductListBase } from "./Base";
-import {
-  FlatList,
-  ListRenderItem,
-  RefreshControlProps,
-} from "react-native";
+import { FlatList, ListRenderItem, RefreshControlProps } from "react-native";
 import { CustomFlatList } from "@/components/common/CustomFaltList";
 import { ListLoading } from "@/components/common/loading/ListLoading";
 
@@ -50,9 +46,7 @@ export function ProductListGrid({
         columnWrapperStyle={{ marginHorizontal: -4 }}
         onEndReached={onEndReached}
         onEndReachedThreshold={0.5}
-        ListFooterComponent={
-          <ListLoading isLoading={isLoadingMore} />
-        }
+        ListFooterComponent={<ListLoading isLoading={isLoadingMore} />}
         refreshControl={refreshControl}
         ListEmptyComponent={ListEmptyComponent}
         contentContainerStyle={{ paddingBottom: 20 }}

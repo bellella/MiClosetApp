@@ -23,7 +23,6 @@ export function ImageUploader({
       allowsMultipleSelection: true,
       quality: 0.8,
     });
-    console.log(result.assets, "??");
 
     if (!result.canceled && result.assets) {
       const updatedImages = [...images, ...result.assets].slice(0, maxImages);

@@ -9,7 +9,6 @@ export function useAuthGuard() {
   const [isLoggedIn, isRestoring] = useAuthStore(
     useShallow((s) => [s.isLoggedIn, s.isRestoring])
   );
-  console.log(isLoggedIn, "logggin?");
   useFocusEffect(
     useCallback(() => {
       if (isRestoring) return;

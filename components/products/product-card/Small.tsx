@@ -1,10 +1,10 @@
-import { CollectionProduct } from "@/types";
+import { ProductItem } from "@/types";
 import { DimensionValue } from "react-native";
 import { ProductCard } from ".";
 
 type ProductCardSmallProps = {
   className?: string;
-  product: CollectionProduct;
+  product: ProductItem;
 
   onPress?: () => void;
   width?: DimensionValue;

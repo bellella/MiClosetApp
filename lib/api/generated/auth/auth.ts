@@ -38,5 +38,14 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
     },
       options);
     }
+  export const authLogout = (
+    
+ options?: SecondParameter<typeof customInstance<void>>,) => {
+      return customInstance<void>(
+      {url: `/api/auth/logout`, method: 'POST'
+    },
+      options);
+    }
   export type AuthGoogleTokenLoginResult = NonNullable<Awaited<ReturnType<typeof authGoogleTokenLogin>>>
 export type AuthFirebaseLoginResult = NonNullable<Awaited<ReturnType<typeof authFirebaseLogin>>>
+export type AuthLogoutResult = NonNullable<Awaited<ReturnType<typeof authLogout>>>

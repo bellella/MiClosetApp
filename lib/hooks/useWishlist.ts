@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   useMutation,
   useInfiniteQuery,
+  useQuery,
   useQueryClient,
+  QueryClient,
 } from "@tanstack/react-query";
 import {
   wishlistAdd,
@@ -10,43 +12,104 @@ import {
   wishlistGetMyWishList,
 } from "@/lib/api/generated/wishlist/wishlist";
 import { useToastMessage } from "@/lib/hooks/useToastMessage";
+import { shopifySdk } from "@/lib/graphql/client";
+import { Product } from "@/lib/graphql/shopify.schema";
+import { useAuthStore } from "@/lib/stores/auth.store";
 
 export type WishListMap = Record<string, boolean>;
 
-type WishListData = {
-  ids: string[];
-  idsMap: WishListMap;
-};
+export const QUERY_KEY_IDS = "wishlist-ids-all";
+export const QUERY_KEY_PRODUCTS = "wishlist-products";
 
-const QUERY_KEY = "wishlistIds";
+/**
+ * Prefetch wishlist data for login flow
+ * Call this after successful login to preload wishlist data
+ */
+export async function prefetchWishlistData(queryClient: QueryClient) {
+  await queryClient.prefetchQuery({
+    queryKey: [QUERY_KEY_IDS],
+    queryFn: async () => {
+      let allIds: string[] = [];
+      let cursor: number | undefined = undefined;
 
-export function useWishlistIds() {
+      while (true) {
+        const { items, nextCursor } = await wishlistGetMyWishList({ cursor });
+        allIds.push(...items.map((i) => i.productId));
+        if (!nextCursor) break;
+        cursor = nextCursor;
+      }
+
+      return allIds;
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+}
+
+// 1. 전체 wishlist ID를 한 번에 가져오기 (페이지네이션 없이)
+export function useWishlistIdsAll() {
+  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
+
+  return useQuery({
+    queryKey: [QUERY_KEY_IDS],
+    queryFn: async () => {
+      const { items } = await wishlistGetMyWishList();
+      return items.map((i) => i.productId);
+    },
+    staleTime: 5 * 60 * 1000,
+    enabled: isLoggedIn,
+  });
+}
+
+// 2. IdsMap만 필요한 곳에서 사용 (HomeCollections 등)
+export function useWishlistIdsMap() {
+  const { data: allIds } = useWishlistIdsAll();
+  console.log(allIds, "useWishlistIdsMap");
+  // return useMemo(() => {
+  //   if (!allIds) return {};
+  //   return allIds.reduce((acc, id) => {
+  //     acc[id] = true;
+  //     return acc;
+  //   }, {} as WishListMap);
+  // }, [allIds]);
+  if (!allIds) return {};
+  return allIds.reduce((acc, id) => {
+    acc[id] = true;
+    return acc;
+  }, {} as WishListMap);
+}
+
+// 3. Wishlist 화면에서 사용 - Product 페이지네이션
+export function useWishlistProducts() {
+  const queryClient = useQueryClient();
+  const { data: allIds } = useWishlistIdsAll();
+
   return useInfiniteQuery({
-    queryKey: [QUERY_KEY],
-    queryFn: async ({ pageParam }) => {
-      const response = await wishlistGetMyWishList({
-        cursor: pageParam,
+    queryKey: [QUERY_KEY_PRODUCTS],
+    queryFn: async ({ pageParam = 0 }) => {
+      // 최신 ID 배열 가져오기
+      const currentIds =
+        queryClient.getQueryData<string[]>([QUERY_KEY_IDS]) ?? [];
+
+      const start = pageParam;
+      const end = start + 20;
+      const pageIds = currentIds.slice(start, end);
+
+      if (pageIds.length === 0) {
+        return { products: [], nextCursor: undefined };
+      }
+
+      const { nodes } = await shopifySdk.products.getProductsByIds({
+        ids: pageIds,
       });
 
       return {
-        items: response.items,
-        nextCursor: response.nextCursor,
+        products: nodes as Product[],
+        nextCursor: end < currentIds.length ? end : undefined,
       };
     },
-    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
-    initialPageParam: undefined as number | undefined,
-    select: (data) => {
-      // Flatten all pages and create ids/idsMap
-      const allItems = data.pages.flatMap((page) => page.items);
-      return {
-        ids: allItems.map((i) => i.productId),
-        idsMap: allItems.reduce((acc, item) => {
-          acc[item.productId] = true;
-          return acc;
-        }, {} as WishListMap),
-        hasNextPage: data.pages[data.pages.length - 1]?.nextCursor != null,
-      };
-    },
+    enabled: !!allIds && allIds.length > 0,
+    getNextPageParam: (lastPage) => lastPage.nextCursor,
+    initialPageParam: 0,
   });
 }
 
@@ -58,48 +121,41 @@ export function useWishlist(
   const { showSuccess, showError } = useToastMessage();
   const [isLiked, setIsLiked] = useState(initialIsLiked);
 
+  useEffect(() => {
+    setIsLiked(initialIsLiked);
+  }, [initialIsLiked]);
+  
   // Add to wishlist with optimistic update
   const addToWishlist = useMutation({
     mutationFn: async () => {
       await wishlistAdd({ productId });
     },
     onMutate: async () => {
-      await queryClient.cancelQueries({ queryKey: [QUERY_KEY] });
-      const previousData = queryClient.getQueryData([QUERY_KEY]);
+      await queryClient.cancelQueries({ queryKey: [QUERY_KEY_IDS] });
+      const previousIds = queryClient.getQueryData<string[]>([QUERY_KEY_IDS]);
 
-      // Update the first page with the new item
-      queryClient.setQueryData([QUERY_KEY], (old: any) => {
-        if (!old?.pages) {
-          return {
-            pages: [{ items: [{ productId }], nextCursor: null }],
-            pageParams: [undefined],
-          };
-        }
+      // Optimistic update: add new ID to the beginning
+      queryClient.setQueryData<string[]>([QUERY_KEY_IDS], (old) => [
+        productId,
+        ...(old ?? []),
+      ]);
 
-        return {
-          ...old,
-          pages: old.pages.map((page: any, index: number) =>
-            index === 0
-              ? { ...page, items: [{ productId }, ...page.items] }
-              : page
-          ),
-        };
-      });
-
-      return { previousData };
+      return { previousIds };
     },
     onSuccess: () => {
       showSuccess("Added to wishlist");
+      // 전체 products query 무효화 (페이지 다시 로드)
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEY_PRODUCTS] });
     },
     onError: (error, _variables, context) => {
       setIsLiked(false);
-      if (context?.previousData) {
-        queryClient.setQueryData([QUERY_KEY], context.previousData);
+      if (context?.previousIds) {
+        queryClient.setQueryData([QUERY_KEY_IDS], context.previousIds);
       }
       showError(error, "Failed to add to wishlist");
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: [QUERY_KEY] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEY_IDS] });
     },
   });
 
@@ -109,36 +165,30 @@ export function useWishlist(
       await wishlistRemove({ productId });
     },
     onMutate: async () => {
-      await queryClient.cancelQueries({ queryKey: [QUERY_KEY] });
-      const previousData = queryClient.getQueryData([QUERY_KEY]);
+      await queryClient.cancelQueries({ queryKey: [QUERY_KEY_IDS] });
+      const previousIds = queryClient.getQueryData<string[]>([QUERY_KEY_IDS]);
 
-      // Remove the item from all pages
-      queryClient.setQueryData([QUERY_KEY], (old: any) => {
-        if (!old?.pages) return old;
+      // Optimistic update: remove ID
+      queryClient.setQueryData<string[]>([QUERY_KEY_IDS], (old) =>
+        (old ?? []).filter((id) => id !== productId)
+      );
 
-        return {
-          ...old,
-          pages: old.pages.map((page: any) => ({
-            ...page,
-            items: page.items.filter((item: any) => item.productId !== productId),
-          })),
-        };
-      });
-
-      return { previousData };
+      return { previousIds };
     },
     onSuccess: () => {
       showSuccess("Removed from wishlist");
+      // 전체 products query 무효화 (페이지 다시 로드)
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEY_PRODUCTS] });
     },
     onError: (error, _variables, context) => {
       setIsLiked(true);
-      if (context?.previousData) {
-        queryClient.setQueryData([QUERY_KEY], context.previousData);
+      if (context?.previousIds) {
+        queryClient.setQueryData([QUERY_KEY_IDS], context.previousIds);
       }
       showError(error, "Failed to remove from wishlist");
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: [QUERY_KEY] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEY_IDS] });
     },
   });
 

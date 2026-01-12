@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { storage } from "../utils/storage";
 import { ShopifyCustomer } from "../api/model";
 import { shopifyGetCustomer } from "../api/generated/shopify/shopify";
+import { authLogout } from "../api/generated/auth/auth";
 
 // type User = { id: string; name: string; email: string };
 
@@ -36,19 +37,14 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
   login: async (user: ShopifyCustomer) => {
     set({ user, isLoggedIn: true });
-    // await storage.setItem("user", JSON.stringify(user));
-    // await storage.setItem("accessToken", accessToken);
-    // await storage.setItem("refreshToken", refreshToken);
   },
   logout: async () => {
+    authLogout();
     set({
       user: null,
       accessToken: null,
       refreshToken: null,
       isLoggedIn: false,
     });
-    // await storage.deleteItem("user");
-    // await storage.deleteItem("accessToken");
-    // await storage.deleteItem("refreshToken");
   },
 }));

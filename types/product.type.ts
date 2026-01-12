@@ -1,5 +1,5 @@
 import {
-  GetCollectionProductsQuery,
+  GetCollectionProductsByHandleQuery,
   ProductVariantFragment,
 } from "@/lib/graphql/products/products.graphql";
 import { ProductOption } from "@/lib/graphql/shopify.schema";
@@ -59,13 +59,15 @@ export type Money = {
 export type ProductVariantItem = ProductVariantFragment & { quantity: number };
 
 export type CollectionProduct = NonNullable<
-  GetCollectionProductsQuery["collection"]
+  GetCollectionProductsByHandleQuery["collection"]
 >["products"]["nodes"][number];
 
-export type Collection = NonNullable<GetCollectionProductsQuery["collection"]>;
+export type Collection = NonNullable<
+  GetCollectionProductsByHandleQuery["collection"]
+>;
 
 export type ProductCollectionProps = {
-  products: CollectionProduct[];
+  products: ProductItem[];
   title?: string;
   onPressMore?: () => void;
 };

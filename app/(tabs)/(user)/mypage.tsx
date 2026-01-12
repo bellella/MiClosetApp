@@ -7,12 +7,12 @@ import { useAuthGuard } from "@/lib/hooks/useAuthGuard";
 import { Link } from "expo-router";
 import { Button } from "@/components/common/Button";
 import { useShallow } from "zustand/react/shallow";
+import { useAuth } from "@/lib/hooks/useAuth";
 
 export default function MyPage() {
   useAuthGuard();
-  const [user, logout] = useAuthStore(
-    useShallow((state) => [state.user, state.logout])
-  );
+  const { logout } = useAuth();
+  const [user] = useAuthStore(useShallow((state) => [state.user]));
 
   return (
     <AppContainer
@@ -21,7 +21,6 @@ export default function MyPage() {
       showHeaderCart={true}
     >
       <View className="w-full max-w-[600px] space-y-6 self-center px-4 py-6">
-        {/* 👤 프로필 영역 */}
         <View className="items-center space-y-2">
           <Text bold size="xl">
             {user?.firstName} {user?.lastName}
@@ -30,11 +29,11 @@ export default function MyPage() {
             {maskEmail(user?.email ?? "")}
           </Text>
 
-          <View className="mt-2 rounded-full bg-black px-4 py-2">
+          {/* <View className="mt-2 rounded-full bg-black px-4 py-2">
             <Text size="sm" className="text-white">
               Edit Profile
             </Text>
-          </View>
+          </View> */}
         </View>
 
         {/* 구분선 */}
@@ -42,7 +41,7 @@ export default function MyPage() {
 
         {/* 📋 메뉴 리스트 */}
         <View className="space-y-1">
-          {/* <Link href="/orders" asChild>
+          <Link href="/orders" asChild>
             <View className="border-muted flex-row items-center justify-between border-b py-4">
               <View className="flex-row items-center space-x-3">
                 <FontAwesome name="truck" size={18} />
@@ -50,7 +49,7 @@ export default function MyPage() {
               </View>
               <FontAwesome name="angle-right" size={16} />
             </View>
-          </Link> */}
+          </Link>
 
           <Link href="/reviews" asChild>
             <View className="border-muted flex-row items-center justify-between border-b py-4">

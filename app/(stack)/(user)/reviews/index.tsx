@@ -36,6 +36,7 @@ export default function ReviewsScreen() {
     ...(reviewableData?.targetOrderItems || []),
     ...(reviewableData?.otherItems || []),
   ].filter((item) => !item.hasReviewed);
+  console.log("reviewableItems", reviewableItems);
 
   // Fetch written reviews
   const {
@@ -97,7 +98,7 @@ export default function ReviewsScreen() {
     <Pressable
       className="border-b border-gray-200 p-4"
       onPress={() => {
-        router.push(`/reviews/${item.id}`);
+        router.push(`/reviews/edit?id=${item.id}`);
       }}
     >
       <Box className="gap-x-3">
