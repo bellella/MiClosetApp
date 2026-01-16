@@ -30,6 +30,9 @@ export function CustomScrollView({
         }),
         ...style,
       }}
+      contentContainerStyle={{
+        minHeight: "100%",
+      }}
       showsHorizontalScrollIndicator={showsHorizontalScrollIndicator}
       showsVerticalScrollIndicator={true}
       {...rest}

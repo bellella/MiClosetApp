@@ -8,7 +8,7 @@ import React from "react";
 export default function HomeScreen() {
   return (
     <AppContainer showHeaderLogo showHeaderCart showHeaderSearch>
-      <Box className="space-y-8">
+      <Box className="gap-y-8">
         <HomeBanner />
         <CategoryIconList />
         <HomeCollections />

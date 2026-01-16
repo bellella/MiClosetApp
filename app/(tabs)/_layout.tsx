@@ -59,12 +59,18 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="(user)/mypage"
+        name="(user)/mypage/index"
         options={{
           title: "마이페이지",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="person-outline" size={size} color={color} />
           ),
+        }}
+      />
+            <Tabs.Screen
+        name="(user)/mypage/setting"
+        options={{
+          href: null
         }}
       />
     </Tabs>

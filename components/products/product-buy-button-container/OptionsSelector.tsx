@@ -37,7 +37,7 @@ export function OptionsSelector({ options = [], onSelect }: Props) {
   };
 
   return (
-    <View className="space-y-4">
+    <View className="gap-y-4">
       {options.map((option, index) => {
         const selectedValue = selectedOptions[option.name];
         const isOpen = openOptionIndex === index;
@@ -52,7 +52,7 @@ export function OptionsSelector({ options = [], onSelect }: Props) {
               onPress={() => setOpenOptionIndex(isOpen ? null : index)}
               disabled={disabled}
               className={cn(
-                "w-full flex-row items-center justify-between border border-gray-300 bg-white px-4 py-3",
+                "w-full flex-row items-center justify-between border border-gray-300 bg-surface px-4 py-3",
                 isOpen ? "rounded-b-0 rounded-t-lg" : "rounded-lg",
                 disabled && "bg-gray-50 opacity-40"
               )}

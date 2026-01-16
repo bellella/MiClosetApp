@@ -1,17 +1,13 @@
 import { AppContainer } from "@/components/app/app-container";
 import { ProductListGrid } from "@/components/products/product-list/Grid";
 import { useAuthGuard } from "@/lib/hooks/useAuthGuard";
-import {
-  useWishlistProducts,
-  useWishlistIdsMap,
-} from "@/lib/hooks/useWishlist";
-import { shopifyToProductCards } from "@/lib/utils/product.utils";
+import { useWishlistProducts } from "@/lib/hooks/useWishlist";
+import { useProductConverter } from "@/lib/hooks/useProductConverter";
 import { useMemo } from "react";
 
 export default function WishlistScreen() {
   useAuthGuard();
-
-  const wishlistMap = useWishlistIdsMap();
+  const { shopifyToProductCards } = useProductConverter();
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useWishlistProducts();
 
@@ -24,8 +20,8 @@ export default function WishlistScreen() {
   const items = useMemo(() => {
     if (!data?.pages) return [];
     const allProducts = data.pages.flatMap((page) => page.products);
-    return shopifyToProductCards(allProducts, wishlistMap);
-  }, [data?.pages, wishlistMap]);
+    return shopifyToProductCards(allProducts);
+  }, [data?.pages, shopifyToProductCards]);
 
   return (
     <AppContainer

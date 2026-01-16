@@ -12,7 +12,7 @@ type ProductImageCarouselProps = {
   imageUrls: Partial<ShopifyImage>[];
 };
 
-const PRODUCT_IMAGE_ASPECT_RATIO = 1;
+const PRODUCT_IMAGE_ASPECT_RATIO = 1/1;
 
 export function ProductImageCarousel({
   imageUrls,
@@ -47,7 +47,7 @@ export function ProductImageCarousel({
         renderItem={({ item }) => (
           <Box className="overflow-hidden rounded-2xl mx-4">
             <Image
-              source={item.url ?? ''}
+              source={{uri: item.url ?? ''}}
               alt={item.altText ?? 'Product Image'}
               style={{
                 width: maxContentWidth,

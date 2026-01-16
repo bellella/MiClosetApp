@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import { View, TouchableOpacity } from "react-native";
+import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Button } from "../ui/button";
 
@@ -16,6 +16,7 @@ export function FloatingButton({ children, onPress }: FloatingButtonProps) {
     >
       <View className="w-full max-w-[600px] px-2">
         <Button
+          action="primary"
           onPress={onPress}
         >
           {children}

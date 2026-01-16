@@ -8,6 +8,7 @@ import { DimensionValue } from "react-native";
 import { Image } from "@/components/ui/image";
 import { ProductItem } from "@/types";
 import { useWishlist } from "@/lib/hooks/useWishlist";
+import { Colors } from "@/theme/colors.generated";
 
 export type ProductCardBaseProps = {
   product: ProductItem;
@@ -65,8 +66,8 @@ export function ProductCard({
             >
               <Heart
                 size={18}
-                color={isLiked ? "#EF4444" : "hotpink"}
-                fill={isLiked ? "#EF4444" : "none"}
+                color={isLiked ? Colors.scheme.light.primary : Colors.scheme.light.primary}
+                fill={isLiked ? Colors.scheme.light.primary : "none"}
               />
             </Pressable>
           )}

@@ -56,6 +56,7 @@ const buttonStyle = tva({
       outline:
         "bg-transparent border data-[hover=true]:bg-background-50 data-[active=true]:bg-transparent",
       solid: "",
+      chip: "bg-primary-100 rounded-full",
     },
 
     size: {
@@ -135,8 +136,9 @@ const buttonTextStyle = tva({
       link: "data-[hover=true]:underline data-[active=true]:underline",
       outline: "",
       solid:
-        "text-typography-0 data-[hover=true]:text-typography-0 data-[active=true]:text-typography-0",
-    },
+        "text-typography-0 data-[hover=true]:text-typography-0 data-[active=true]:text-typography-0",  
+      chip: "text-primary-700",
+      },
     size: {
       xs: "text-xs",
       sm: "text-sm",
@@ -326,7 +328,7 @@ const ButtonText = React.forwardRef<
           size: parentSize,
           action: parentAction,
         },
-        variant: variant as "link" | "outline" | "solid" | undefined,
+        variant: variant as "link" | "outline" | "solid" | "chip" | undefined,
         size,
         action: action as
           | "primary"

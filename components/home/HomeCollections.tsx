@@ -5,8 +5,7 @@ import { shopifySdk } from "@/lib/graphql/client";
 import { ProductCollectionProps } from "@/types";
 import { ProductListGrid } from "../products/product-list/Grid";
 import { ProductListSlider } from "../products/product-list/Slider";
-import { shopifyToProductCards } from "@/lib/utils/product.utils";
-import { useWishlistIdsMap } from "@/lib/hooks/useWishlist";
+import { useProductConverter } from "@/lib/hooks/useProductConverter";
 
 export type ProductUIType = "grid" | "slider";
 
@@ -25,7 +24,7 @@ const collectionUIMap: Record<
 };
 
 export function HomeCollections() {
-  const wishlistMap = useWishlistIdsMap();
+  const { shopifyToProductCards } = useProductConverter();
   const results = useQueries({
     queries: COLLECTIONS.map(({ handle }) => ({
       queryKey: ["collection", handle],
@@ -44,12 +43,9 @@ export function HomeCollections() {
         if (isLoading || isError || !data?.collection) return null;
 
         const Component = collectionUIMap[ui];
-        const products = shopifyToProductCards(
-          data.collection.products.nodes,
-          wishlistMap
-        );
+        const products = shopifyToProductCards(data.collection.products.nodes);
         return (
-          <Box key={handle} className="space-y-4">
+          <Box key={handle} className="gap-y-4">
             <Component
               title={data.collection.description ?? ""}
               products={products}

@@ -2,7 +2,6 @@
 import React, { useRef, useState, useCallback } from "react";
 import { View, Text, Pressable, ScrollView } from "react-native";
 import { AppActionSheet } from "../../app/AppActionSheet";
-import { Button } from "../../common/Button";
 import { AlgoliaIndex } from "@/lib/algolia/client";
 import {
   Radio,
@@ -14,6 +13,7 @@ import {
 import { Circle } from "lucide-react-native";
 import { CustomScrollView } from "@/components/common/CustomScrollView";
 import { PriceRangeFilter } from "./PriceRangeFilter";
+import { Button, ButtonText } from "@/components/ui/button";
 
 export type SearchFilters = {
   sort: string;
@@ -162,18 +162,20 @@ export function SearchFiltersContainer({ facets, onApplyFilters }: Props) {
   return (
     <>
       {/* 상단 버튼 */}
-      <View className="flex-row flex-wrap gap-2 p-4">
+      <View className="flex-row flex-wrap  p-4">
         {FILTER_TABS.map((tab) => (
-          <Pressable
+          <Button
+          className="mr-2"
+          size="sm"
+          variant="chip"
             key={tab.key}
             onPress={() => handleOpenFilter(tab.key)}
-            className="flex-row items-center rounded-full bg-background-100 px-3 py-2"
           >
-            <Text className="text-typography-900">
+            <ButtonText>
               {tab.label}
               {tab.count > 0 ? ` (${tab.count})` : ""}
-            </Text>
-          </Pressable>
+            </ButtonText>
+          </Button>
         ))}
       </View>
 

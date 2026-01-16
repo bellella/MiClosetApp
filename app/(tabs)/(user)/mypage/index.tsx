@@ -51,11 +51,21 @@ export default function MyPage() {
             </View>
           </Link>
 
-          <Link href="/reviews" asChild>
+          <Link href="/reviews">
             <View className="border-muted flex-row items-center justify-between border-b py-4">
               <View className="flex-row items-center space-x-3">
                 <FontAwesome name="comment-o" size={18} />
                 <Text size="sm">Reviews</Text>
+              </View>
+              <FontAwesome name="angle-right" size={16} />
+            </View>
+          </Link>
+
+          <Link href="/mypage/setting">
+            <View className="border-muted flex-row items-center justify-between border-b py-4">
+              <View className="flex-row items-center space-x-3">
+                <FontAwesome name="comment-o" size={18} />
+                <Text size="sm">Setting</Text>
               </View>
               <FontAwesome name="angle-right" size={16} />
             </View>

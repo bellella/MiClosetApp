@@ -18,6 +18,7 @@ export * from './getMyReviewsResponse';
 export * from './getMyReviewsResponseNextCursor';
 export * from './getMyWishlistResponse';
 export * from './getMyWishlistResponseNextCursor';
+export * from './getPreviewByProductId';
 export * from './getReviewableItemsResponse';
 export * from './googleLoginDto';
 export * from './jwtTokensResponseDto';

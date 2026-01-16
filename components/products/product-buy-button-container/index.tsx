@@ -14,6 +14,7 @@ import { Button } from "@/components/common/Button";
 import { useCheckout } from "@/lib/hooks/useCheckout";
 import { useToast } from "@/components/ui/toast";
 import { useToastMessage } from "@/lib/hooks/useToastMessage";
+import { ButtonText } from "@/components/ui/button";
 
 type Props = {
   options: Pick<ProductOption, "name" | "values">[];
@@ -59,11 +60,11 @@ export function ProductBuyButtonContainer({ options, variants }: Props) {
     <>
       {/* Floating 구매 버튼 */}
       <FloatingButton onPress={handleOpen}>
-        <Text className="text-base font-bold text-white">구매하기</Text>
+        <ButtonText>Buy</ButtonText>
       </FloatingButton>
       {/* Actionsheet */}
       <AppActionSheet isOpen={isOpen} onClose={handleClose}>
-        <ScrollView className="h-[70vh] w-full p-4">
+        <ScrollView className="h-[50vh] w-full p-4">
             <OptionsSelector options={options} onSelect={handleOptionSelect} />
 
             {selectedVariants.length > 0 && (
@@ -92,7 +93,7 @@ export function ProductBuyButtonContainer({ options, variants }: Props) {
                 disabled={isVariantsEmpty || buyNow.isPending}
                 loading={buyNow.isPending}
               >
-                바로구매
+                Buy
               </Button>
 
               <Button
@@ -102,7 +103,7 @@ export function ProductBuyButtonContainer({ options, variants }: Props) {
                 disabled={isVariantsEmpty || cartLinesAdd.isPending}
                 loading={cartLinesAdd.isPending}
               >
-                장바구니 담기
+                Add To Cart
               </Button>
             </View>
           </View>

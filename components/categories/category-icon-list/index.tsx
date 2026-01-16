@@ -67,7 +67,7 @@ export function CategoryIconList() {
                   />
                 )}
               </View>
-              <Text size="xs" className="mt-1 text-center">
+              <Text size="xs" className="mt-3 text-center">
                 {item.title}
               </Text>
             </TouchableOpacity>

@@ -16,6 +16,7 @@ import { Dimensions } from "react-native";
 
 import { useColorScheme } from "@/components/useColorScheme";
 import { useLayoutStore } from "@/lib/stores/layout.store";
+import { useThemeStore, getResolvedColorScheme } from "@/lib/stores/theme.store";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { QueryClient } from "@tanstack/react-query";
 import { ApolloProvider } from "@apollo/client";
@@ -59,7 +60,9 @@ export default function RootLayout() {
 const queryClient = new QueryClient();
 
 function RootLayoutNav() {
-  const colorScheme = useColorScheme() ?? "light";
+  const systemColorScheme = useColorScheme();
+  const { themeMode } = useThemeStore();
+  const colorScheme = getResolvedColorScheme(themeMode, systemColorScheme);
   const { updateMaxContentWidth } = useLayoutStore();
 
   useEffect(() => {

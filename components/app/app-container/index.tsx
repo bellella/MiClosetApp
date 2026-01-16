@@ -3,6 +3,8 @@ import { View } from "@/components/Themed";
 import { AppHeader } from "@/components/app/app-container/AppHeader";
 import { Box } from "@/components/ui/box";
 import { CustomScrollView } from "@/components/common/CustomScrollView";
+import { cn } from "@/lib/utils/classnames";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 interface AppContainerProps {
   showHeaderLogo?: boolean;
@@ -14,6 +16,7 @@ interface AppContainerProps {
   showHeaderSearch?: boolean;
   onPressCart?: () => void;
   disableScroll?: boolean;
+  hasFloatButton?: boolean;
   children: React.ReactNode;
 }
 
@@ -27,6 +30,7 @@ export function AppContainer({
   showHeaderSearch = false,
   onPressCart,
   disableScroll = false,
+  hasFloatButton = false,
   children,
 }: AppContainerProps) {
   return (
@@ -45,10 +49,12 @@ export function AppContainer({
           <View className="w-full max-w-[600px] flex-1">{children}</View>
         ) : (
           <CustomScrollView
-            className="flex w-full max-w-[600px] flex-1"
+            className={cn("flex w-full max-w-[600px] flex-1", hasFloatButton ? "pb-20" : "")}
             scrollVisible="always"
           >
+            <SafeAreaView>
             {children}
+            </SafeAreaView>
           </CustomScrollView>
         )}
       </Box>

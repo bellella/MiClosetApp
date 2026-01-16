@@ -10,6 +10,7 @@ import type {
   DeleteResultDto,
   GetAllByProductIdResponse,
   GetMyReviewsResponse,
+  GetPreviewByProductId,
   GetReviewableItemsResponse,
   ReviewWithoutUser,
   ReviewsControllerGetAllByProductIdParams,
@@ -61,6 +62,14 @@ if(createReviewDto.images !== undefined) {
       return customInstance<GetReviewableItemsResponse>(
       {url: `/api/reviews/reviewable`, method: 'GET',
         params
+    },
+      options);
+    }
+  export const reviewsGetPreviewByProductId = (
+    productId: string,
+ options?: SecondParameter<typeof customInstance<GetPreviewByProductId>>,) => {
+      return customInstance<GetPreviewByProductId>(
+      {url: `/api/reviews/product/${productId}/preview`, method: 'GET'
     },
       options);
     }
@@ -120,6 +129,7 @@ if(createReviewDto.images !== undefined) {
   export type ReviewsCreateResult = NonNullable<Awaited<ReturnType<typeof reviewsCreate>>>
 export type ReviewsGetAllByUserIdResult = NonNullable<Awaited<ReturnType<typeof reviewsGetAllByUserId>>>
 export type ReviewsGetReviewableItemsResult = NonNullable<Awaited<ReturnType<typeof reviewsGetReviewableItems>>>
+export type ReviewsGetPreviewByProductIdResult = NonNullable<Awaited<ReturnType<typeof reviewsGetPreviewByProductId>>>
 export type ReviewsGetAllByProductIdResult = NonNullable<Awaited<ReturnType<typeof reviewsGetAllByProductId>>>
 export type ReviewsGetOneResult = NonNullable<Awaited<ReturnType<typeof reviewsGetOne>>>
 export type ReviewsUpdateReviewResult = NonNullable<Awaited<ReturnType<typeof reviewsUpdateReview>>>

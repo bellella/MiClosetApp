@@ -2,10 +2,8 @@
 import React, { useEffect, useState } from "react";
 import {
   View,
-  Text,
   ActivityIndicator,
   TextInput,
-  Pressable,
 } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import {
@@ -18,14 +16,14 @@ import {
   SearchFilters,
   SearchFiltersContainer,
 } from "@/components/search/search-filters-containers";
-import {
-  algoliaToProductCards,
-  AlgoliaProduct,
-} from "@/lib/utils/product.utils";
 import { ProductListGrid } from "@/components/products/product-list/Grid";
 import { ProductItem } from "@/types/product.type";
+import { Button, ButtonText } from "@/components/ui/button";
+import { AlgoliaProduct, useProductConverter } from "@/lib/hooks/useProductConverter";
+import { PageLoading } from "@/components/common/loading/PageLoading";
 
 export default function SearchResultScreen() {
+  const { algoliaToProductCards} = useProductConverter();
   const { keyword: initialKeyword } = useLocalSearchParams<{
     keyword: string;
   }>();
@@ -56,12 +54,12 @@ export default function SearchResultScreen() {
     const res = await algolia.search(keyword, searchParams);
 
     // Algolia 결과를 ProductItem으로 변환
-    const productCards = algoliaToProductCards(res.hits as AlgoliaProduct[]);
+    const productCards = algoliaToProductCards(res.hits as unknown as AlgoliaProduct[]);
     setProducts(productCards);
     setFacets(res.facets || {});
     setLoading(false);
   };
-
+  console.log(products, "products from search result");
   useEffect(() => {
     runSearch();
   }, []);
@@ -78,15 +76,17 @@ export default function SearchResultScreen() {
           placeholder="검색어 입력"
           returnKeyType="search"
           onSubmitEditing={() => runSearch()}
-          className="flex-1 rounded-lg border px-3 py-2"
+          className="flex-1 rounded-md border px-3 py-2 mr-2"
         />
 
-        <Pressable
-          onPress={() => runSearch()}
-          className="bg-primary ml-3 rounded-lg px-4 py-2"
-        >
-          <Text className="font-semibold text-white">검색</Text>
-        </Pressable>
+        <Button
+                  size="sm"
+                  variant="outline"
+                  action="primary"
+            onPress={() => runSearch()}
+          >
+            <ButtonText>Search</ButtonText>
+          </Button>
       </View>
 
       {/* ----------------------------
@@ -97,11 +97,8 @@ export default function SearchResultScreen() {
         onApplyFilters={(f) => runSearch(f)}
       />
 
-      {/* ---------------------------- */}
       {loading ? (
-        <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" />
-        </View>
+        <PageLoading />
       ) : (
         <ProductListGrid products={products} />
       )}

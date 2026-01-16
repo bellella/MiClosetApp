@@ -40,7 +40,7 @@ export default function ProductDetailScreen() {
 
   return (
     <>
-      <AppContainer headerTitle="Product Detail" showBackButton showHeaderCart>
+      <AppContainer headerTitle="Product Detail" showBackButton showHeaderCart hasFloatButton>
         <ProductImageCarousel imageUrls={product.images.nodes} />
         <View className="w-full max-w-[600px] space-y-6 self-center px-4 py-6">
           <View>

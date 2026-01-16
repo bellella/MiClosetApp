@@ -1,12 +1,14 @@
 import { Pressable, View } from "react-native";
 import { Text } from "@/components/ui/text";
-import { Image } from "@/components/ui/image";
 import { Spinner } from "@/components/ui/spinner";
 import { Star } from "lucide-react-native";
 import { useQuery } from "@tanstack/react-query";
-import { reviewsGetAllByProductId } from "@/lib/api/generated/reviews/reviews";
+import { reviewsGetPreviewByProductId } from "@/lib/api/generated/reviews/reviews";
 import { useRouter } from "expo-router";
-import { formatLocalDate } from "@/lib/utils/date.utils";
+import { HStack } from "@/components/ui/hstack";
+import { VStack } from "@/components/ui/vstack";
+import { CustomFlatList } from "@/components/common/CustomFaltList";
+import { PreviewReviewItem } from "./PreviewReviewItem";
 
 type Props = {
   productId: string;
@@ -16,9 +18,8 @@ export function ProductDetailReview({ productId }: Props) {
   const router = useRouter();
 
   const { data, isLoading } = useQuery({
-    queryKey: ["product-reviews", productId],
-    queryFn: () =>
-      reviewsGetAllByProductId(encodeURIComponent(productId), { limit: 10 }),
+    queryKey: ["product-reviews-preview", productId],
+    queryFn: () => reviewsGetPreviewByProductId(encodeURIComponent(productId)),
     enabled: !!productId,
   });
 
@@ -31,121 +32,66 @@ export function ProductDetailReview({ productId }: Props) {
   }
 
   const reviewList = data?.items || [];
-  const imageReviews = reviewList.filter(
-    (r) => r.images && r.images.length > 0
-  );
-  const textReviews = reviewList.filter(
-    (r) => !r.images || r.images.length === 0
-  );
 
   if (reviewList.length === 0) {
     return (
-      <View className="mt-10">
+      <VStack className="mt-10">
         <Text bold size="md" className="mb-2">
-          상품 리뷰
+          Reviews
         </Text>
         <Text size="sm" className="text-gray-400">
-          아직 등록된 리뷰가 없습니다.
+          No reviews yet.
         </Text>
-      </View>
+      </VStack>
     );
   }
 
+  const totalCount = reviewList.length;
+  const averageRating =
+    totalCount > 0
+      ? (reviewList.reduce((sum, r) => sum + r.rating, 0) / totalCount).toFixed(
+          1
+        )
+      : "0";
+
+  const handleViewAll = () => {
+    router.push(`/products/${encodeURIComponent(productId)}/reviews`);
+  };
+
   return (
-    <View className="mt-10 space-y-8">
-      <Text bold size="md">
-        상품 리뷰 ({reviewList.length})
-      </Text>
-
-      {/* 📸 이미지 리뷰 카드 */}
-      {imageReviews.length > 0 && (
-        <View className="flex-row flex-wrap gap-3">
-          {imageReviews.map((r) => (
-            <View
-              key={r.id}
-              className="w-[46%] overflow-hidden rounded-md bg-gray-50"
-            >
-              <Image
-                source={{ uri: r.images[0] }}
-                className="h-40 w-full"
-                resizeMode="cover"
-              />
-              <View className="p-2">
-                <Text size="xs" bold className="mb-1">
-                  {r.user.firstName || "익명"}
-                </Text>
-                <View className="mb-1 flex-row items-center gap-1">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star
-                      key={i}
-                      size={12}
-                      fill={i < r.rating ? "#FCD34D" : "none"}
-                      color={i < r.rating ? "#FCD34D" : "#D1D5DB"}
-                    />
-                  ))}
-                </View>
-                <Text size="xs" numberOfLines={2} className="text-gray-600">
-                  {r.body}
-                </Text>
-              </View>
-            </View>
-          ))}
-        </View>
-      )}
-
-      {/* 📝 텍스트 리뷰 리스트 */}
-      <View className="space-y-6">
-        {textReviews.map((review) => (
-          <View key={review.id} className="border-b border-gray-200 pb-4">
-            <View className="mb-1 flex-row items-center justify-between">
-              <Text size="sm" bold>
-                {review.user.firstName || "익명"}
-              </Text>
-              <View className="flex-row items-center space-x-1">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star
-                    key={i}
-                    size={14}
-                    fill={i < review.rating ? "#FCD34D" : "none"}
-                    color={i < review.rating ? "#FCD34D" : "#D1D5DB"}
-                  />
-                ))}
-                <Text size="xs" className="ml-1 text-gray-500">
-                  {review.rating}.0
-                </Text>
-              </View>
-            </View>
-
-            {review.title && (
-              <Text size="sm" bold className="mb-1">
-                {review.title}
-              </Text>
-            )}
-
-            <Text size="sm" className="leading-relaxed text-gray-800">
-              {review.body}
-            </Text>
-
-            <Text size="xs" className="mt-1 text-gray-400">
-              {formatLocalDate(review.createdAt)}
-            </Text>
-          </View>
-        ))}
-      </View>
-
-      {/* 🔘 전체 보기 버튼 */}
-      {reviewList.length > 5 && (
-        <Pressable
-          className="mt-4 items-center rounded-lg border border-gray-300 py-3"
-          onPress={() => {
-            // Navigate to all reviews screen
-          }}
-        >
-          <Text size="sm" bold>
-            리뷰 전체 보기
+    <VStack className="mt-10">
+      {/* Header */}
+      <HStack className="mb-3 items-center justify-between px-4">
+        <Text bold size="md">
+          Reviews ({totalCount})
+        </Text>
+        <Pressable onPress={handleViewAll}>
+          <Text size="sm" className="text-gray-500">
+            View All &gt;
           </Text>
         </Pressable>
-      )}
-    </View>
+      </HStack>
+
+      {/* Rating Summary */}
+      <HStack className="mb-4 items-center gap-x-2 px-4">
+        <Star size={20} fill="#FCD34D" color="#FCD34D" />
+        <Text size="lg" bold>
+          {averageRating}
+        </Text>
+        <Text size="sm" className="text-gray-500">
+          ({totalCount} reviews)
+        </Text>
+      </HStack>
+
+      {/* Horizontal Review Slider */}
+      <CustomFlatList
+        data={reviewList}
+        renderItem={({ item }) => <PreviewReviewItem item={item} />}
+        keyExtractor={(item) => item.id.toString()}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{ paddingHorizontal: 16 }}
+      />
+    </VStack>
   );
 }
