@@ -12,8 +12,6 @@ import { Collection } from "@/types";
 
 export default function CategoieScreen() {
   const router = useRouter();
-  const scrollRef = useRef<ScrollView>(null);
-  const sectionRefs = useRef<Record<string, any>>({});
   const { categories: originalCategories } = useCategories();
 
   // Extract category IDs
@@ -46,42 +44,49 @@ export default function CategoieScreen() {
   }
 
   return (
-    <AppContainer headerTitle="Categories" showBackButton={true}>
-      <View className="w-full flex-row">
-        <ScrollView ref={scrollRef} className="flex-1 px-4">
-          <View className="flex-col gap-6 py-4">
-            {categories.map((category) => {
-              const subCategories = category.metafield?.references?.nodes || [];
+    <AppContainer headerTitle="Categories" showHeaderCart showBackButton>
+      <View className="w-full flex-row px-4">
+        <View className="flex-col gap-6 py-4">
+          {categories.map((category) => {
+            const subCategories = category.metafield?.references?.nodes || [];
 
-              return (
-                <View key={category.id}>
-                  <Text className="text-primary mb-2 font-bold">
+            return (
+              <View key={category.id}>
+                <Pressable onPress={() => {
+                  router.push({
+                    pathname: "/categories/products",
+                    params: {
+                      categoryId: category.id,
+                    },
+                  });
+                }}>
+                  <Text bold>
                     {category.title}
                   </Text>
-                  <View className="flex-row flex-wrap">
-                    {subCategories.map((subItem: any) => (
-                      <Pressable
-                        key={subItem.id}
-                        className="w-1/2 flex-row items-center justify-between py-2"
-                        onPress={() => {
-                          router.push({
-                            pathname: "/categories/products",
-                            params: {
-                              categoryId: category.id,
-                              subCategoryId: subItem.id,
-                            },
-                          });
-                        }}
-                      >
-                        <Text size="sm">{subItem.title}</Text>
-                      </Pressable>
-                    ))}
-                  </View>
+                </Pressable>
+                <View className="flex-row flex-wrap">
+                  {subCategories.map((subItem: any) => (
+                    <Pressable
+                      key={subItem.id}
+                      className="w-1/2 flex-row items-center justify-between py-2"
+                      onPress={() => {
+                        router.push({
+                          pathname: "/categories/products",
+                          params: {
+                            categoryId: category.id,
+                            subCategoryId: subItem.id,
+                          },
+                        });
+                      }}
+                    >
+                      <Text size="sm">{subItem.title}</Text>
+                    </Pressable>
+                  ))}
                 </View>
-              );
-            })}
-          </View>
-        </ScrollView>
+              </View>
+            );
+          })}
+        </View>
       </View>
     </AppContainer>
   );

@@ -16,12 +16,13 @@ import { Dimensions } from "react-native";
 
 import { useColorScheme } from "@/components/useColorScheme";
 import { useLayoutStore } from "@/lib/stores/layout.store";
-import { useThemeStore, getResolvedColorScheme } from "@/lib/stores/theme.store";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { QueryClient } from "@tanstack/react-query";
 import { ApolloProvider } from "@apollo/client";
 import { AuthProvider } from "@/components/app/AuthProvider";
-import { expoThemeDark, expoThemeLight } from "@/theme/expoTheme";
+import { expoTheme, expoThemeDark, expoThemeLight } from "@/theme/expoTheme";
+import { Colors } from "@/theme/colors.generated";
+import { useColors } from "@/lib/hooks/useColors";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -60,9 +61,7 @@ export default function RootLayout() {
 const queryClient = new QueryClient();
 
 function RootLayoutNav() {
-  const systemColorScheme = useColorScheme();
-  const { themeMode } = useThemeStore();
-  const colorScheme = getResolvedColorScheme(themeMode, systemColorScheme);
+  const { colorScheme } = useColors();
   const { updateMaxContentWidth } = useLayoutStore();
 
   useEffect(() => {
@@ -77,10 +76,10 @@ function RootLayoutNav() {
   return (
     <GluestackUIProvider mode={colorScheme}>
       <ThemeProvider
-        value={colorScheme === "dark" ? expoThemeDark : expoThemeLight}
+        value={expoTheme[colorScheme]}
       >
         <SafeAreaProvider>
-          <SafeAreaView edges={["top"]} style={{ flex: 1 }}>
+          <SafeAreaView edges={["top"]} style={{ flex: 1, backgroundColor: 'var(--color-background)' }}>
             <QueryClientProvider client={queryClient}>
               <AuthProvider>
                 <Stack>

@@ -11,12 +11,12 @@ type Props = {
 
 export function QuantitySelector({ quantity, onChange }: Props) {
   return (
-    <View className="flex-row items-center space-x-3">
+    <View className="flex-row items-center gap-x-3">
       <Pressable
         onPress={() => onChange(Math.max(quantity - 1, 1))}
         className="p-1 border border-gray-300 rounded-md"
       >
-        <Feather name="minus" size={16} color="#333" />
+        <Feather name="minus" size={16} color="var(--color-on-surface)" />
       </Pressable>
 
       <Text className="min-w-[24px] text-center">{quantity}</Text>
@@ -25,7 +25,7 @@ export function QuantitySelector({ quantity, onChange }: Props) {
         onPress={() => onChange(quantity + 1)}
         className="p-1 border border-gray-300 rounded-md"
       >
-        <Feather name="plus" size={16} color="#333" />
+        <Feather name="plus" size={16} color="var(--color-on-surface)" />
       </Pressable>
     </View>
   );

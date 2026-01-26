@@ -1,7 +1,7 @@
 /* 기본 설정 */
 .custom-scroll {
   scrollbar-width: thin;
-  --scroll-thumb-color: oklch(var(--color-primary-300)); /* 기본 thumb 색 */
+  --scroll-thumb-color: var(--color-primary-300); /* 기본 thumb 색 */
 }
 
 /* ===================================

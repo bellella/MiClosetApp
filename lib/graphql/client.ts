@@ -6,13 +6,15 @@ import { getSdk as getCustomersSdk } from "./customers/customers.graphql";
 import { getSdk as getAuthSdk } from "./auth/auth.graphql";
 import { getSdk as getCategoriesSdk } from "./categories/categories.graphql";
 
-const gqlClient = new GraphQLClient("http://localhost:4000/shopify");
-
-// const client = createStorefrontApiClient({
-//   storeDomain: 'https://miicloset.myshopify.com',
-//   apiVersion: '2023-10',
-//   publicAccessToken: process.env.EXPO_PUBLIC_SHOPIFY_STOREFRONT_API_TOKEN!,
-// });
+export const shopifyClient = new GraphQLClient(
+  process.env.EXPO_PUBLIC_SHOPIFY_API_URL!,
+  {
+    headers: {
+      "X-Shopify-Storefront-Access-Token": process.env.EXPO_PUBLIC_SHOPIFY_STOREFRONT_API_TOKEN!,
+      "Content-Type": "application/json",
+    }
+  }
+);
 
 /**
  * Shopify SDK 생성기
@@ -30,4 +32,4 @@ function createShopifySdk(client: any) {
   };
 }
 
-export const shopifySdk = createShopifySdk(gqlClient);
+export const shopifySdk = createShopifySdk(shopifyClient);

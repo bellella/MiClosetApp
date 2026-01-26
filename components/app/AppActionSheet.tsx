@@ -15,7 +15,7 @@ export function AppActionSheet({ isOpen, onClose, children }: Props) {
   return (
     <Actionsheet isOpen={isOpen} onClose={onClose}>
       <ActionsheetBackdrop />
-      <ActionsheetContent className="w-full max-w-app self-center">
+      <ActionsheetContent className="max-h-[80vh] w-full max-w-app self-center">
         {children}
       </ActionsheetContent>
     </Actionsheet>

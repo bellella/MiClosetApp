@@ -3,6 +3,7 @@ import React from 'react';
 import type { VariantProps } from '@gluestack-ui/utils/nativewind-utils';
 import { Text as RNText } from 'react-native';
 import { textStyle } from './styles';
+import { cn } from '@/lib/utils/classnames';
 
 type ITextProps = React.ComponentProps<typeof RNText> &
   VariantProps<typeof textStyle>;
@@ -25,7 +26,7 @@ const Text = React.forwardRef<React.ComponentRef<typeof RNText>, ITextProps>(
   ) {
     return (
       <RNText
-        className={textStyle({
+        className={cn('color-onSurface', textStyle({
           isTruncated: isTruncated as boolean,
           bold: bold as boolean,
           underline: underline as boolean,
@@ -35,7 +36,7 @@ const Text = React.forwardRef<React.ComponentRef<typeof RNText>, ITextProps>(
           italic: italic as boolean,
           highlight: highlight as boolean,
           class: className,
-        })}
+        }))}
         {...props}
         ref={ref}
       />

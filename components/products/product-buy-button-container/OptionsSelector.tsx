@@ -70,7 +70,7 @@ export function OptionsSelector({ options = [], onSelect }: Props) {
             </Pressable>
 
             {isOpen && (
-              <Box className="w-full overflow-hidden rounded-b-lg border border-t-0 border-gray-300 bg-white">
+              <Box className="w-full overflow-hidden rounded-b-lg border border-t-0 border-gray-300 bg-surface">
                 {option.values.map((value) => {
                   const isSelected = selectedValue === value;
                   return (
@@ -78,7 +78,7 @@ export function OptionsSelector({ options = [], onSelect }: Props) {
                       key={value}
                       onPress={() => handleSelect(option.name, value, index)}
                       className={`w-full border-b border-gray-200 px-4 py-3 last:border-b-0 ${
-                        isSelected ? "bg-gray-100" : "bg-white"
+                        isSelected ? "bg-surface-bright" : "bg-surface"
                       }`}
                     >
                       <Text>{value}</Text>

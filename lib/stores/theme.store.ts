@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { ColorSchemeName } from "react-native";
 
 export type ThemeMode = "light" | "dark" | "system";
 
@@ -22,13 +21,3 @@ export const useThemeStore = create<ThemeStore>()(
     }
   )
 );
-
-export function getResolvedColorScheme(
-  themeMode: ThemeMode,
-  systemColorScheme: ColorSchemeName
-): "light" | "dark" {
-  if (themeMode === "system") {
-    return systemColorScheme ?? "light";
-  }
-  return themeMode;
-}

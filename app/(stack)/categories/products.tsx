@@ -40,9 +40,8 @@ export default function Categories() {
   const title = useCategoryTitle(categoryId, subCategoryId);
 
   return (
-    <AppContainer headerTitle={title} showBackButton showHeaderCart>
+    <AppContainer headerTitle={title} disableScroll showBackButton showHeaderCart>
       <CategoryHeader />
-
       {isLoading && (
         <View style={{ paddingTop: 40, alignItems: "center" }}>
           <Spinner size="large" color="#000" />

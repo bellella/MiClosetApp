@@ -29,7 +29,7 @@ export const OrderItemCard = ({ order }: { order: Order | ShopifyOrder }) => {
       {allItems.map((edge: any, index: number) => {
         const item = edge.node;
         return (
-          <HStack key={item.id || index} className="mb-3 space-x-3">
+          <HStack key={item.id || index} className="mb-3 gap-x-3">
             <Image
               source={{ uri: item?.image?.url }}
               className="h-24 w-20 rounded-md bg-gray-100"

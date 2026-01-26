@@ -1,5 +1,4 @@
 import React from "react";
-import { View } from "@/components/Themed";
 import { AppHeader } from "@/components/app/app-container/AppHeader";
 import { Box } from "@/components/ui/box";
 import { CustomScrollView } from "@/components/common/CustomScrollView";
@@ -34,7 +33,7 @@ export function AppContainer({
   children,
 }: AppContainerProps) {
   return (
-    <View className="flex-1">
+    <Box className="flex-1 bg-background">
       <AppHeader
         title={headerTitle}
         left={headerLeft}
@@ -46,18 +45,20 @@ export function AppContainer({
       />
       <Box className="w-screen flex-1 items-center">
         {disableScroll ? (
-          <View className="w-full max-w-[600px] flex-1">{children}</View>
+          <Box className={cn("w-full max-w-[600px] flex-1", hasFloatButton ? "pb-20" : "")}>{children}</Box>
         ) : (
           <CustomScrollView
-            className={cn("flex w-full max-w-[600px] flex-1", hasFloatButton ? "pb-20" : "")}
+            className={cn("w-full max-w-[600px]")}
             scrollVisible="always"
+            isFullPage={true}
           >
-            <SafeAreaView>
+            <SafeAreaView edges={["bottom"]}
+            className={cn("w-full flex-1", hasFloatButton ? "mb-20" : "")}>
             {children}
             </SafeAreaView>
           </CustomScrollView>
         )}
       </Box>
-    </View>
+    </Box>
   );
 }

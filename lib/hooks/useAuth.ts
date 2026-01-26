@@ -32,7 +32,6 @@ export const useAuth = () => {
     await authLogout();
     // Clear wishlist data from React Query cache
     queryClient.removeQueries({ queryKey: [QUERY_KEY_IDS] });
-    console.log("확실히 지웠음.");
     queryClient.removeQueries({ queryKey: [QUERY_KEY_PRODUCTS] });
     await storeLogout();
   };

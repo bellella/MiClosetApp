@@ -7,6 +7,7 @@ type Props = React.ComponentProps<typeof ScrollView> & {
   style?: any;
   scrollVisible?: "hover" | "always";
   scrollThumbColor?: string;
+  isFullPage?: boolean;
 };
 
 export function CustomScrollView({
@@ -15,6 +16,7 @@ export function CustomScrollView({
   style,
   scrollVisible = "hover",
   scrollThumbColor,
+  isFullPage = false,
   ...rest
 }: Props) {
   const scrollClass =
@@ -31,7 +33,7 @@ export function CustomScrollView({
         ...style,
       }}
       contentContainerStyle={{
-        minHeight: "100%",
+        minHeight: isFullPage ? "100%" : undefined,
       }}
       showsHorizontalScrollIndicator={showsHorizontalScrollIndicator}
       showsVerticalScrollIndicator={true}

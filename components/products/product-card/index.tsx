@@ -75,11 +75,11 @@ export function ProductCard({
 
         {/* Product Info */}
         <VStack className="px-1">
-          <Text size={fontSize} className="text-gray-700" numberOfLines={2}>
+          <Text size={fontSize} numberOfLines={2}>
             {product.title}
           </Text>
 
-          <HStack className="items-center space-x-1">
+          <HStack className="items-center gap-x-1">
             <Text size={fontSize} bold>
               {product.price?.toLocaleString()} {product.currency}
             </Text>

@@ -82,11 +82,11 @@ export default function CartScreen() {
   return (
     <>
       <AppContainer headerTitle="Cart" showBackButton>
-        <VStack className="space-y-4 px-4 pb-20">
+        <VStack className="gap-y-4 px-4 pb-20">
           {/* Select All / Delete */}
           <HStack className="items-center justify-between">
             <Pressable onPress={toggleSelectAll}>
-              <HStack className="items-center space-x-2">
+              <HStack className="items-center gap-x-2">
                 <FontAwesome
                   name={isAllSelected ? "check-square" : "square-o"}
                   size={20}
@@ -117,7 +117,7 @@ export default function CartScreen() {
             return (
               <Box
                 key={node.id}
-                className="space-y-2 rounded-xl border border-gray-200 p-4"
+                className="gap-y-2 rounded-xl border border-gray-200 p-4"
               >
                 <Pressable onPress={() => toggleSelectItem(node.id)}>
                   <FontAwesome
@@ -128,13 +128,13 @@ export default function CartScreen() {
                     color={selectedItems.has(node.id) ? "#000" : "#999"}
                   />
                 </Pressable>
-                <HStack className="space-x-4">
+                <HStack className="gap-x-4">
                   <Image
                     source={{ uri: product.featuredImage?.url }}
                     className="h-32 w-24 rounded"
                     resizeMode="cover"
                   />
-                  <VStack className="flex-1 space-y-1">
+                  <VStack className="flex-1 gap-y-1">
                     <HStack className="justify-between">
                       <Text bold>{product.vendor}</Text>
                       <Pressable onPress={() => removeLine.mutate(node.id)}>
@@ -149,7 +149,7 @@ export default function CartScreen() {
                     </Text>
 
                     {/* Price */}
-                    <HStack className="items-center space-x-2">
+                    <HStack className="items-center gap-x-2">
                       <Text bold>${price.toLocaleString()}</Text>
                     </HStack>
 
@@ -175,7 +175,7 @@ export default function CartScreen() {
           })}
 
           {/* Order Summary */}
-          <Box className="space-y-3 rounded-xl border border-gray-200 bg-white p-4">
+          <Box className="gap-y-3 rounded-xl border border-gray-200 bg-white p-4">
             <Text bold>Order Summary</Text>
             <HStack className="justify-between">
               <Text>Subtotal</Text>

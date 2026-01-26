@@ -36,7 +36,7 @@ export function CategoryHeader() {
   };
 
   return (
-    <View className="bg-white">
+    <View>
       {/* ─────────────── Top Categories ─────────────── */}
       <CustomScrollView
         scrollVisible="hover"

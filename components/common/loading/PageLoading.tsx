@@ -12,10 +12,10 @@ type PageLoadingProps = {
   showOverlay?: boolean;
 };
 
-export function PageLoading({showOverlay = false}: PageLoadingProps) {
+export function PageLoading({ showOverlay = false }: PageLoadingProps) {
   return (
     <View className={cn("absolute h-full w-full justify-center items-center z-50", showOverlay && "bg-white/70")}>
-      <Spinner size="large" color="purple" />
+      <Spinner size="large" />
     </View>
   );
 }

@@ -1,10 +1,9 @@
 import { useLocalSearchParams } from "expo-router";
-import { View } from "@/components/Themed";
 import { Text } from "@/components/ui/text";
 import { ProductDetailReview } from "@/components/reviews/ProductDetailReview";
 import { AppContainer } from "@/components/app/app-container";
 import { ProductImageCarousel } from "@/components/products/ProductImageCarousel";
-import { useWindowDimensions } from "react-native";
+import { useWindowDimensions, View } from "react-native";
 import RenderHtml from "react-native-render-html";
 import { shopifySdk } from "@/lib/graphql/client";
 import { useQuery } from "@tanstack/react-query";
@@ -42,7 +41,7 @@ export default function ProductDetailScreen() {
     <>
       <AppContainer headerTitle="Product Detail" showBackButton showHeaderCart hasFloatButton>
         <ProductImageCarousel imageUrls={product.images.nodes} />
-        <View className="w-full max-w-[600px] space-y-6 self-center px-4 py-6">
+        <View className="w-full max-w-[600px] gap-y-6 self-center px-4 py-6">
           <View>
             <Text size="sm" className="text-gray-500">
               {product.vendor}
@@ -63,7 +62,7 @@ export default function ProductDetailScreen() {
             <RenderHtml
               contentWidth={width}
               source={{ html: product.descriptionHtml }}
-              baseStyle={{ fontSize: 14, color: "#4B5563", lineHeight: 22 }}
+              baseStyle={{ fontSize: 14, lineHeight: 22, color: 'var(--color-on-surface)' }}
             />
           </View>
 

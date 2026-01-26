@@ -36,7 +36,6 @@ export default function ReviewsScreen() {
     ...(reviewableData?.targetOrderItems || []),
     ...(reviewableData?.otherItems || []),
   ].filter((item) => !item.hasReviewed);
-  console.log("reviewableItems", reviewableItems);
 
   // Fetch written reviews
   const {

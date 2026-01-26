@@ -25,9 +25,9 @@ export default function WishlistScreen() {
 
   return (
     <AppContainer
-      headerTitle="찜한 상품"
-      showHeaderLogo={true}
-      showHeaderCart={true}
+      showHeaderLogo
+      showHeaderCart
+      showHeaderSearch
       disableScroll={true}
     >
       <ProductListGrid

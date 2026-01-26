@@ -14,7 +14,7 @@ export default function LoginScreen() {
   return (
     <AppContainer headerTitle="login" showBackButton disableScroll={true}>
       <View className="h-full flex-1 items-center justify-center">
-        <Box className="flex items-center justify-center space-y-6 p-6">
+        <Box className="flex items-center justify-center gap-y-6 p-6">
           {loading ? (
             <Box className="mt-4 items-center justify-center">
               <Spinner size="large" />

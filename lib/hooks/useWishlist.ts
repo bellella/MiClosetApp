@@ -63,7 +63,6 @@ export function useWishlistIdsAll() {
 // 2. IdsMap만 필요한 곳에서 사용 (HomeCollections 등)
 export function useWishlistIdsMap() {
   const { data: allIds } = useWishlistIdsAll();
-  console.log(allIds, "useWishlistIdsMap");
   // return useMemo(() => {
   //   if (!allIds) return {};
   //   return allIds.reduce((acc, id) => {

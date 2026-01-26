@@ -2,8 +2,6 @@
 import React, { useEffect, useState } from "react";
 import {
   View,
-  ActivityIndicator,
-  TextInput,
 } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import {
@@ -21,6 +19,7 @@ import { ProductItem } from "@/types/product.type";
 import { Button, ButtonText } from "@/components/ui/button";
 import { AlgoliaProduct, useProductConverter } from "@/lib/hooks/useProductConverter";
 import { PageLoading } from "@/components/common/loading/PageLoading";
+import { Input, InputField } from "@/components/ui/input";
 
 export default function SearchResultScreen() {
   const { algoliaToProductCards} = useProductConverter();
@@ -59,7 +58,6 @@ export default function SearchResultScreen() {
     setFacets(res.facets || {});
     setLoading(false);
   };
-  console.log(products, "products from search result");
   useEffect(() => {
     runSearch();
   }, []);
@@ -69,15 +67,17 @@ export default function SearchResultScreen() {
       {/* ----------------------------  
            🔍 상단 검색창 추가
       ---------------------------- */}
-      <View className="flex-row items-center border-b border-gray-200 p-4">
-        <TextInput
-          value={keyword}
-          onChangeText={setKeyword}
-          placeholder="검색어 입력"
-          returnKeyType="search"
-          onSubmitEditing={() => runSearch()}
-          className="flex-1 rounded-md border px-3 py-2 mr-2"
-        />
+      <View className="flex-row items-center border-b border-gray-200 p-4 gap-2">
+
+          <Input className="flex-1" size="sm">
+            <InputField
+              value={keyword}
+              onChangeText={setKeyword}
+              placeholder="Enter your search term"
+              returnKeyType="search"
+              onSubmitEditing={() => runSearch()}
+            />
+          </Input>
 
         <Button
                   size="sm"

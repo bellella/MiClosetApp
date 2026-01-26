@@ -1,12 +1,13 @@
 import React from "react";
 import { Tabs } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
 import { Colors } from "@/theme/colors.generated";
 import { useColorScheme } from "react-native";
+import { Home, List, UserRound, Heart } from "lucide-react-native";
+import { useColors } from "@/lib/hooks/useColors";
 
 export default function TabLayout() {
-  const scheme = useColorScheme() ?? "light";
-  const colors = Colors.scheme[scheme];
+  const { colors } = useColors();
+  const iconColor = colors.primary;
   return (
     <Tabs
       screenOptions={{
@@ -17,16 +18,15 @@ export default function TabLayout() {
           alignSelf: "center",
           //borderTopColor: colors.primary,
         },
-        tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: colors.secondary,
+        tabBarActiveTintColor: iconColor,
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
           title: "홈",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home-outline" size={size} color={color} />
+          tabBarIcon: ({ focused, color, size }) => (
+            <Home size={size} color={color} />
           ),
         }}
       />
@@ -35,7 +35,7 @@ export default function TabLayout() {
         options={{
           title: "카테고리",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="grid-outline" size={size} color={color} />
+            <List size={size} color={color} />
           ),
         }}
       />
@@ -44,9 +44,6 @@ export default function TabLayout() {
         options={{
           href: null,
           title: "로그인",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person-outline" size={size} color={color} />
-          ),
         }}
       />
       <Tabs.Screen
@@ -54,7 +51,7 @@ export default function TabLayout() {
         options={{
           title: "찜",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="heart-outline" size={size} color={color} />
+            <Heart size={size} color={color} />
           ),
         }}
       />
@@ -63,11 +60,11 @@ export default function TabLayout() {
         options={{
           title: "마이페이지",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person-outline" size={size} color={color} />
+            <UserRound size={size} color={color} />
           ),
         }}
       />
-            <Tabs.Screen
+      <Tabs.Screen
         name="(user)/mypage/setting"
         options={{
           href: null

@@ -23,14 +23,14 @@ export function SelectedVariants({
   if (variants.length === 0) return null;
 
   return (
-    <View className="mt-6 space-y-3">
+    <View className="mt-6 gap-y-3">
       <Text className="mb-2 font-medium">선택된 상품</Text>
 
       {variants.map((variant) => (
         <Box
           key={variant.id}
           className={cn(
-            "relative space-y-1 rounded-lg border bg-white p-3",
+            "relative gap-y-1 rounded-lg border bg-surface p-3",
             variant.availableForSale ? "" : "opacity-50"
           )}
         >
@@ -39,7 +39,7 @@ export function SelectedVariants({
               {variant.title.replace("/", " / ")}
             </Text>{" "}
             <Pressable onPress={() => onRemove(variant.id)} className="">
-              <Feather name="x" size={18} color="#999" />
+              <Feather name="x" size={18} color="var(--color-on-surface)" />
             </Pressable>
           </HStack>
 

@@ -25,9 +25,9 @@ export function CheckoutWaitingAlert({ isOpen }: CheckoutWaitingAlertProps) {
       <ModalBackdrop />
       <ModalContent className="p-8">
         <ModalBody>
-          <VStack className="space-y-4 items-center">
-            <Spinner size="large" color="purple" />
-            <VStack className="space-y-2 items-center">
+          <VStack className="gap-y-4 items-center">
+            <Spinner size="large" />
+            <VStack className="gap-y-2 items-center">
               <Text bold size="lg">
                 Checkout in Progress
               </Text>

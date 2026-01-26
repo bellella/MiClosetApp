@@ -33,7 +33,7 @@ export function CategoryIconList() {
         const category = item.resource!;
         return (
           <Link
-            key={item.id}
+            key={category.id}
             href={{
               pathname: "/categories/products",
               params: {

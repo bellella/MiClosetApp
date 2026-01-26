@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { View, Text } from "react-native";
 import RangeSlider from "react-native-fast-range-slider";
 import { usePriceRange } from "./usePriceRange";
+import { Colors } from "@/theme/colors.generated";
 
 type Props = {
   priceRangeFacet: Record<string, number> | undefined;
@@ -59,10 +60,9 @@ export function PriceRangeFilter({
         thumbSize={18}
         trackHeight={3}
         selectedTrackStyle={{
-          backgroundColor: "purple",
+          backgroundColor: Colors.scheme.light.primary,
         }}
-        thumbStyle={{ backgroundColor: "purple" }}
-        pressedThumbStyle={{ transform: [{ scale: 1.2 }] }}
+        pressedThumbStyle={{ transform: [{ scale: 1.5 }] }}
         allowOverlap={false}
         showThumbLines={false}
         onValuesChange={handleValuesChange}

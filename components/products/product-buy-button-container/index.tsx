@@ -1,12 +1,11 @@
 "use client";
 import React, { useState } from "react";
-import { ScrollView } from "react-native";
+import { ScrollView, View } from "react-native";
 import { Text } from "@/components/ui/text";
 import { AppActionSheet } from "@/components/app/AppActionSheet";
 import { FloatingButton } from "@/components/common/FloatingButton";
 import { OptionsSelector } from "./OptionsSelector";
 import { SelectedVariants } from "./SelectedVariants";
-import { View } from "@/components/Themed";
 import { ProductOption } from "@/lib/graphql/shopify.schema";
 import { ProductVariantFragment } from "@/lib/graphql/products/products.graphql";
 import { useProductBuy } from "./useProductBuy"; // ✅ 훅 import
@@ -15,6 +14,7 @@ import { useCheckout } from "@/lib/hooks/useCheckout";
 import { useToast } from "@/components/ui/toast";
 import { useToastMessage } from "@/lib/hooks/useToastMessage";
 import { ButtonText } from "@/components/ui/button";
+import { CustomScrollView } from "@/components/common/CustomScrollView";
 
 type Props = {
   options: Pick<ProductOption, "name" | "values">[];
@@ -64,7 +64,7 @@ export function ProductBuyButtonContainer({ options, variants }: Props) {
       </FloatingButton>
       {/* Actionsheet */}
       <AppActionSheet isOpen={isOpen} onClose={handleClose}>
-        <ScrollView className="h-[50vh] w-full p-4">
+        <CustomScrollView className="h-[50vh] w-full p-4">
             <OptionsSelector options={options} onSelect={handleOptionSelect} />
 
             {selectedVariants.length > 0 && (
@@ -74,12 +74,12 @@ export function ProductBuyButtonContainer({ options, variants }: Props) {
                 onRemove={removeVariant}
               />
             )}
-          </ScrollView>
+          </CustomScrollView>
 
           {/* 하단 결제 영역 */}
-          <View className="w-full border-t border-gray-200 bg-white p-4">
+          <View className="w-full border-t border-gray-200 p-4">
             <View className="mb-2 flex-row items-center justify-between">
-              <Text className="flex-1 text-lg font-medium">총 금액</Text>
+              <Text className="flex-1 text-lg font-medium">Total Price</Text>
               <Text className="text-lg font-bold">
                 {totalPrice.toLocaleString()} KRW
               </Text>

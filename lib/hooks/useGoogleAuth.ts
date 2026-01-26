@@ -5,11 +5,12 @@ import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { authGoogleTokenLogin } from "@/lib/api/generated/auth/auth";
 import { useRouter } from "expo-router";
+import * as AuthSession from "expo-auth-session";
 
 // Configure Google Sign-In for native platforms
 GoogleSignin.configure({
   webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
-  iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_LIENT_ID,
+  iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
   scopes: ["profile", "email"],
 });
 
@@ -18,10 +19,12 @@ export const useGoogleAuth = () => {
   const { login } = useAuth();
   const router = useRouter();
 
+
+
   // Web Google Auth configuration
   const [request, response, promptAsync] = Google.useAuthRequest({
     webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID!,
-    iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_LIENT_ID,
+    iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
     redirectUri: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_REDIRECT_URI,
     scopes: ["profile", "email"],
   });
@@ -79,7 +82,6 @@ export const useGoogleAuth = () => {
         if (!data?.idToken) {
           throw new Error("Failed to get Google access token.");
         }
-
         // Get access token from Google Sign-In
         const tokens = await GoogleSignin.getTokens();
         await handleGoogleAuth(tokens.accessToken);

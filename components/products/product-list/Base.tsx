@@ -22,7 +22,7 @@ export function ProductListBase({ title, onPressMore, children }: ProductListBas
                     </Text>
                 )}
                 {onPressMore && (
-                    <Pressable onPress={onPressMore} className="flex-row items-center space-x-1">
+                    <Pressable onPress={onPressMore} className="flex-row items-center gap-x-1">
                         <Text size="sm" className="text-gray-400">
                             더보기
                         </Text>

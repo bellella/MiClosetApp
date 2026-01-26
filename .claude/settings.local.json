@@ -6,7 +6,9 @@
       "Bash(yarn add:*)",
       "Bash(npm install:*)",
       "Bash(npx expo install:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(wc:*)",
+      "Bash(npx prettier:*)"
     ],
     "deny": [],
     "ask": []

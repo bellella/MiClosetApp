@@ -1,9 +1,11 @@
 // app/search/index.tsx
 import React, { useState } from "react";
-import { View, TextInput, TouchableOpacity, Text } from "react-native";
+import { View } from "react-native";
 import { useRouter } from "expo-router";
 import { AppContainer } from "@/components/app/app-container";
 import { Button, ButtonText } from "@/components/ui/button";
+import { Input, InputField } from "@/components/ui/input";
+import { Text } from "@/components/ui/text";
 
 export default function SearchScreen() {
   const router = useRouter();
@@ -21,15 +23,16 @@ export default function SearchScreen() {
     <AppContainer headerTitle="Search" showBackButton={true}>
       <View className="p-4">
         <Text className="mb-4 text-xl font-bold">Search</Text>
-        <View className="flex-row items-center">
-          <TextInput
-            value={keyword}
-            onChangeText={setKeyword}
-            placeholder="Enter your search term"
-            className="flex-1 rounded-md border px-3 py-2 mr-2"
-            onSubmitEditing={handleSearch}
-            returnKeyType="search"
-          />
+        <View className="flex-row items-center gap-2">
+          <Input className="flex-1" size="sm">
+            <InputField
+              value={keyword}
+              onChangeText={setKeyword}
+              placeholder="Enter your search term"
+              onSubmitEditing={handleSearch}
+              returnKeyType="search"
+            />
+          </Input>
 
           <Button
           size="sm"

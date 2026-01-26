@@ -2,11 +2,10 @@ import { Image, useColorScheme } from "react-native";
 import { Pressable } from "@/components/ui/pressable";
 import { Text } from "@/components/ui/text";
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import { View } from "react-native";
 import { Box } from "@/components/ui/box";
-import { Colors } from "@/theme/colors.generated";
+import { useColors } from "@/lib/hooks/useColors";
 type AppHeaderProps = {
   title?: string;
   left?: React.ReactNode;
@@ -26,17 +25,25 @@ export function AppHeader({
   showCart = false,
   showSearch = false,
 }: AppHeaderProps) {
-  const scheme = useColorScheme() ?? "light";
-  const iconColor = Colors.scheme[scheme].primary;
-  const navigation = useNavigation();
+  const router = useRouter();
+  const { colors } = useColors();
+  const iconColor = colors.primary;
+
+  const handleBack = () => {
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace('/');
+    }
+  };
 
   return (
     <View className="w-screen items-center">
       <View className="z-50 h-[50px] w-full max-w-app flex-row items-center justify-between self-center px-4 py-3">
-        <View>
+        <View className="w-1/4">
           {left}
           {showBackButton && (
-            <Pressable onPress={() => navigation.goBack()}>
+            <Pressable onPress={handleBack}>
               <Ionicons name="chevron-back" size={20} color={iconColor} />
             </Pressable>
           )}
@@ -59,14 +66,14 @@ export function AppHeader({
             </Box>
           ) : null}
         </View>
-        <View>
+        <View className="flex-1">
           {title && (
             <Text size="lg" bold className="flex-1 text-center">
               {title}
             </Text>
           )}
         </View>
-        <View className="flex-row items-center gap-4 justify-self-end">
+        <View className="w-1/4 flex-row items-center gap-4 justify-end">
           {right}
           {showSearch && (
             <Link href="/search">
